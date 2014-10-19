@@ -21,3 +21,8 @@ Esto puede significar que posiblemente el código no esté completamente optimiz
 También he dejado de lado la implementación OO original en favor de una forma procedural más tradicional (aún cuando TCL desde la versión 8.6 ya ha incorporado la POO).
 
 __*Luis Alejandro Muzzachiodi (2014)*__
+
+
+----------
+### Notes ###
+- TCLFPDF uses the *procedure* **Init** where FPDF uses the *class constructor* **FPDF** (the parameters are the same).
