@@ -519,19 +519,22 @@ proc ::fpdf::SetLineWidth { width } {
 }
 
 proc ::fpdf::Line { x1 y1 x2 y2 } {
+	variable k; variable h;
 	;# Draw a line
-	_out [format "%.2f %.2f m %.2f %.2f l S" [expr $x1*k] [expr (h-$y1)*k] [expr $x2*k] [expr (h-$y2)*k]];
+	_out [format "%.2f %.2f m %.2f %.2f l S" [expr $x1*$k] [expr ($h-$y1)*$k] [expr $x2*$k] [expr ($h-$y2)*$k]];
 }
 
-proc ::fpdf::Rect { x y w h {style "" } } {
+proc ::fpdf::Rect { x1 y1 w1 h1 {style "" } } {
+	variable k; variable h;
 	;# Draw a rectangle
-	if {$style=="F"}
+	if {$style=="F"} {
 		set op  "f";
-	elseif {$style=="FD" || $style=="DF"}
+	} elseif {$style=="FD" || $style=="DF"} {
 		set op  "B";
-	else
+	} else {
 		set op  "S";
-	_out [format "%.2f %.2f %.2f %.2f re %s" [expr $x*k] [expr (h-$y)*k] [expr $w*k] [expr -$h*k] $op ];
+	}
+	_out [format "%.2f %.2f %.2f %.2f re %s" [expr $x1*$k] [expr ($h-$y1)*$k] [expr $w1*$k] [expr -$h1*$k] $op ];
 }
 
 proc ::fpdf::AddFont { family {style ""} {file ""}} {
