@@ -1,13 +1,13 @@
 ;# *******************************************************************************
 ;# tclfpdf.tcl 
-;# Version: 0.17.2 (2015)
+;# Version: 0.17.3 (2015)
 ;# Ported to TCL by L. A. Muzzachiodi
 ;# Credits:
 ;# Main code based on fpdf.php 1.7 by Olivier Plathey 
 ;# Parse of JPEG based on pdf4tcl 0.8 by Peter Spjuth
 ;# *******************************************************************************
 
-package provide tclfpdf 0.17.2
+package provide tclfpdf 0.17.3
 package require Tk
 namespace eval ::tclfpdf:: {
 	namespace export \
@@ -59,8 +59,8 @@ namespace eval ::tclfpdf:: {
 		        SetXY \
 		        Output \
 
-	set FPDF_VERSION "0.17"
-	set FPDF_FONTPATH "[file join [pwd] [file dirname [info script]]]\\font\\"
+	set TCLFPDF_VERSION "0.17.3"
+	set TCLFPDF_FONTPATH "[file join [pwd] [file dirname [info script]]]\\font\\"
 
 	variable page                      	;# current page number
 	variable n                           	;# current object number
@@ -68,10 +68,10 @@ namespace eval ::tclfpdf:: {
 	variable buffer                    	;# buffer holding in-memory PDF
 	variable pages                    	;# array containing pages
 	variable state                     	;# current document state
-	variable compress              		;# compression flag
+	variable compress              	;# compression flag
 	variable k                          	;# scale factor (number of points in user unit)
-	variable DefOrientation       		;# default orientation
-	variable CurOrientation       		;# current orientation
+	variable DefOrientation       	;# default orientation
+	variable CurOrientation       	;# current orientation
 	variable StdPageSizes         	;# standard page sizes
 	variable DefPageSize           	;# default page size
 	variable CurPageSize           	;# current page size
@@ -79,14 +79,14 @@ namespace eval ::tclfpdf:: {
 	variable wPt 
 	variable hPt                       	;# dimensions of current page in points
 	variable w 
-	variable h                        		;# dimensions of current page in user unit
-	variable lMargin                		;# left margin
-	variable tMargin                		;# top margin
-	variable rMargin                		;# right margin
+	variable h                        	;# dimensions of current page in user unit
+	variable lMargin                	;# left margin
+	variable tMargin                	;# top margin
+	variable rMargin                	;# right margin
 	variable bMargin                     	;# page break margin
 	variable cMargin                    	;# cell margin
 	variable x
-	variable y                         		;# current position in user unit
+	variable y                         	;# current position in user unit
 	variable lasth                        	;# height of last printed cell
 	variable LineWidth                  	;# line width in user unit
 	variable fontpath                	;# path containing fonts
@@ -98,14 +98,14 @@ namespace eval ::tclfpdf:: {
 	variable FontStyle                   	;# current font style
 	variable underline                    	;# underlining flag
 	variable CurrentFont               	;# current font info
-	variable FontSizePt           		;# current font size in points
-	variable FontSize                      	;# current font size in user unit
+	variable FontSizePt           	;# current font size in points
+	variable FontSize                      ;# current font size in user unit
 	variable DrawColor                 	;# commands for drawing color
-	variable FillColor                		;# commands for filling color
+	variable FillColor                	;# commands for filling color
 	variable TextColor                	;# commands for text color
 	variable ColorFlag                	;# indicates whether fill and text colors are different
 	variable ws                        	;# word spacing
-	variable images                		;# array of used images
+	variable images                	;# array of used images
 	variable PageLinks                  	;# array of links in pages
 	variable links                        	;# array of internal links
 	variable AutoPageBreak        	;# automatic page breaking
@@ -115,11 +115,11 @@ namespace eval ::tclfpdf:: {
 	variable ZoomMode                	;# zoom display mode
 	variable LayoutMode                	;# layout display mode
 	variable title ""                        	;# title
-	variable subject ""                    	;# subject
+	variable subject ""                    ;# subject
 	variable author ""                    	;# author
 	variable keywords ""                	;# keywords
 	variable creator ""                	;# creator
-	variable AliasNbPages   ""    		;# alias for total number of pages
+	variable AliasNbPages   ""    	;# alias for total number of pages
 	variable PDFVersion                	;# PDF version number
 }        
 
@@ -157,8 +157,8 @@ proc ::tclfpdf::Init { { orientation P } { unit mm } { size A4 } } {
 	array set PageSizes {};
 	;# Font path
 	variable fontpath;
-	variable FPDF_FONTPATH;
-	set fontpath $FPDF_FONTPATH;
+	variable TCLFPDF_FONTPATH;
+	set fontpath $TCLFPDF_FONTPATH;
 	;# Core fonts
 	variable CoreFonts [list courier helvetica times symbol zapfdingbats];
 	array set fonts {};
@@ -339,7 +339,7 @@ proc ::tclfpdf::AliasNbPages { {alias "\{nb\}"} } {
 
 proc ::tclfpdf::Error { msg } {
 	;# Fatal error
-	puts "FPDF error: $msg";
+	puts "TCLFPDF error: $msg";
 	exit
 }
 
@@ -998,7 +998,7 @@ proc ::tclfpdf::Image { file { x1 "" } { y1 "" } { w1 0 } { h1  0 }  { type1 "" 
 		set mtd  "_parse$type1";
 		if {[lsearch [info procs] $mtd] == -1} {
 		        Error "Unsupported image type: $type1";
-		}	
+		}
 		array set info [$mtd $file];
 		array set info "i  [expr [array size images]+1]";
 		set imagesl [ list [array get info]];
@@ -1272,13 +1272,13 @@ proc ::tclfpdf::_parsejpg { file } {
 	;# Based on the method addJpeg of pdf4tcl 
         set imgOK false
         if {[catch {open $file "rb"} fr] } {
-            Error "Can't open file $filename"
+            Error "Can't open file $file"
         }
         set img [read $fr]
         close $fr
         binary scan $img "H4" h
         if {$h != "ffd8"} {
-            Error "File $filename doesn't contain JPEG data."
+            Error "File $file doesn't contain JPEG data."
         }
         set pos 2
         set img_length [string length $img]
@@ -1286,7 +1286,7 @@ proc ::tclfpdf::_parsejpg { file } {
             set endpos [expr {$pos+4}]
             binary scan [string range $img $pos $endpos] "H4S" h length
             set length [expr {$length & 0xffff}]
-            if {$h == "ffc0"} {
+            if {$h == "ffc0" || $h == "ffc2"} {
                 incr pos 4
                 set endpos [expr {$pos+6}]
                 binary scan [string range $img $pos $endpos] "cSSc" bits height width channels
@@ -1300,7 +1300,7 @@ proc ::tclfpdf::_parsejpg { file } {
             }
         }
         if {!$imgOK} {
-            return Error "Something is wrong with jpeg data in file $filename"
+            Error "Something is wrong with jpeg data in file $file"
         } 	
 	if {$channels ==3} {
 		set colspace  "DeviceRGB"
@@ -1315,8 +1315,7 @@ proc ::tclfpdf::_parsejpg { file } {
 		set bpc 8
 	}
 	array set jpeg [ list w $width h $height cs $colspace bpc $bpc f DCTDecode data $img]
-	return [array get jpeg]
-	
+	return [array get jpeg]	
 }
 
 proc ::tclfpdf::_parsepng { file} {
@@ -1816,9 +1815,9 @@ proc ::tclfpdf::_putresources { } {
 }
 
 proc ::tclfpdf::_putinfo { } {
-	variable FPDF_VERSION; variable title; variable subject; variable author; variable keywords;
+	variable TCLFPDF_VERSION; variable title; variable subject; variable author; variable keywords;
 	variable creator;
-	set version "FPDF $FPDF_VERSION"
+	set version "TCLFPDF $TCLFPDF_VERSION"
 	_out "/Producer [_textstring $version]";
 	if {$title!=""} {
 		_out "/Title [_textstring $title]";
