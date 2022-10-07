@@ -7,7 +7,7 @@
 </head>
 <body>
 <h1>AddFont</h1>
-<code>AddFont family ?style? ?file?</code>
+<code>AddFont family ?style? ?file? ?unicode?</code>
 <h2>Description</h2>
 Imports a TrueType, OpenType or Type1 font and makes it available. It is necessary to generate a font
 definition file first with the MakeFont utility.
@@ -38,8 +38,24 @@ The font definition file.
 <br>
 By default, the name is built from the family and style, in lower case with no space.
 </dd>
-</dl>
 
+<dt><code>unicode</code></dt>
+<dd>
+Indicate if the font support unicode charset.
+<br>
+By default is false.
+</dd>
+
+
+</dl>
+<h2>Example</h2>
+<div class="doc-source">
+<pre><code> AddFont Comic I;</code></pre>
+</div>
+is equivalent to:
+<div class="doc-source">
+<pre><code>AddFont Comic I comici.tcl;</code></pre>
+</div>
 <h2>See also</h2>
 <a href="setfont.htm">SetFont</a>.
 <hr style="margin-top:1.5em">

@@ -29,6 +29,16 @@ String to print.
 URL or identifier returned by AddLink.
 </dd>
 </dl>
+<h2>Example</h2>
+<div class="doc-source">
+<pre><code># Begin with regular font
+SetFont Arial "" 14 ;
+Write 5 "Visit";
+# Then put a blue underlined link
+SetTextColor 0 0 255;
+SetFont "" U;
+Write 5 "www.fpdf.org" "http://www.fpdf.org";</code></pre>
+</div>
 
 <h2>See also</h2>
 <a href="setfont.htm">SetFont</a>,
