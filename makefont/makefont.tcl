@@ -21,7 +21,7 @@ proc  Message { txt {severity ""} } {
 		        tk_messageBox -icon error -message $txt -title "$severity";
 		}
 		std  {
-		        puts "$severity $msg";
+		        puts "$severity $txt";
 		}
 	}
 }

@@ -1,9 +1,9 @@
 ;# *******************************************************************************
 ;# tclfpdf.tcl 
-;# Version: 1.5 (2022)
+;# Version: 1.6 (2023)
 ;# Ported to TCL by L. A. Muzzachiodi
 ;# Credits:
-;# Based on tFPDF 1.32 by Ian Back <ianb@bpm1.com>
+;# Based on tFPDF 1.33 by Ian Back <ianb@bpm1.com>
 ;# and Tycho Veltmeijer <tfpdf@tychoveltmeijer.nl> (versions 1.30+)
 ;# wich is based on fpdf.php 1.8.2 by Olivier Plathey 
 ;# Parse of JPEG based on pdf4tcl 0.8 by Peter Spjuth
@@ -11,7 +11,7 @@
 ;# Note: 
 ;# the definition of core fonts have a diference: the uv index in FPDF, not tfpdf, cause a bigger file (?)
 
-package provide tclfpdf 1.5
+package provide tclfpdf 1.6
 package require Tk
 namespace eval ::tclfpdf:: {
 	namespace export \
@@ -63,10 +63,17 @@ namespace eval ::tclfpdf:: {
 		        SetXY \
 		        Output \
 
-	variable TCLFPDF_VERSION "1.5"
 	variable TCLFPDF_FONTPATH "[file join [pwd] [file dirname [info script]]]/font"
-	variable SYSTEM_TTFONTS "[file normalize $::env(SystemRoot)/fonts]"; # Windows
 	
+	set SYSTEM_TTFONTS ""
+	switch -- $::tcl_platform(platform) {
+		windows { set SYSTEM_TTFONTS "[file normalize $::env(SystemRoot)/fonts]" }
+		unix { set SYSTEM_TTFONTS "/usr/share/fonts"}
+		macintosh {set SYSTEM_TTFONTS "/System/Library/Fonts"}
+		default { Error "Missing system path font.\n The platform: $::tc_platform(platform) isn't defined."}
+	}
+	
+	variable VERSION 1.6
 	variable unifontSubset		;#
 	variable page                      	;# current page number
 	variable n                           	;# current object number
@@ -125,6 +132,7 @@ namespace eval ::tclfpdf:: {
 	variable ZoomMode                	;# zoom display mode
 	variable LayoutMode                	;# layout display mode
 	variable metadata			;# document properties
+	variable CreationDate		;#document creation date
 	variable PDFVersion                	;# PDF version number
 	variable Spaces4Tab			;#How spaces are a Tab ?
 	variable TAB				;# Constant with spaces according Space4Tab	
@@ -227,6 +235,11 @@ proc ::tclfpdf::Init { { orientation P } { unit mm } { size A4 } } {
 	SetDisplayMode "default" ;
 	;# Enable compression
 	SetCompression 1;
+	;#Metadata
+	variable VERSION;
+	variable metadata; 
+	array set metadata "Producer tFPDF$VERSION";
+	
 	;# Set default PDF version number
 	variable PDFVersion  "1.3";
 	if {[namespace which -command Header]== "::Header"} {
@@ -778,8 +791,18 @@ proc ::tclfpdf::SetLink { link  {y1 {0}} {page1 {-1}}} {
 
 proc ::tclfpdf::Link { x y w h link} {
 	;# Put a link on the page
-	variable PageLinks; variable page; variable k; variable hPt; 
-	array set PageLinks [list $page  [list  [expr $x*$k] [expr $hPt-$y*$k]  [expr $w*$k] [expr $h*$k] $link]];
+	variable PageLinks; variable page; variable k; variable hPt;
+	set nl 0
+	set i 0
+	while (1) {
+	      	if {[array names PageLinks -exact $page,$i ] eq {}} {
+		    set nl $i;
+		    break;	
+		} else {
+		   incr i;
+		}
+	}
+	set PageLinks($page,$nl)  [list  [expr $x*$k] [expr $hPt-$y*$k]  [expr $w*$k] [expr $h*$k] $link];
 }
 
 proc ::tclfpdf::Text {x  y txt } {
@@ -1362,7 +1385,7 @@ proc ::tclfpdf::_getpagesize {size} {
 }
 
 proc ::tclfpdf::_beginpage { orientation size rotation} {
-	variable page; variable pages;variable state;
+	variable page; variable pages;variable PageLinks; variable state;
 	variable lMargin; variable tMargin; variable bMargin;
 	variable FontFamily; variable PageSizes;
 	variable DefOrientation; variable DefPageSize;variable CurOrientation;
@@ -1371,21 +1394,22 @@ proc ::tclfpdf::_beginpage { orientation size rotation} {
 	variable CurRotation;
 	
 	incr page;
-	array set pages "$page {}";
+	set pages($page) {};
+	set PageLinks($page) {};
 	set state  2;
-	set x  $lMargin;
-	set y  $tMargin;
+	set x $lMargin;
+	set y $tMargin;
 	set FontFamily  "";
 	;# Check page size and orientation
 	if {$orientation==""} {
-		set orientation  $DefOrientation;
+		set orientation $DefOrientation;
 	} else {
-		set orientation  [string toupper [string index $orientation 0]];
+		set orientation [string toupper [string index $orientation 0]];
 	}        
 	if {$size==""} {
-		set size  $DefPageSize;
+		set size $DefPageSize;
 	} else {
-		set size  [_getpagesize $size];
+		set size [_getpagesize $size];
 	}        
 	if {$orientation!=$CurOrientation || [lindex $size 0]!=[lindex $CurPageSize 0] || [lindex $size 1]!=[lindex $CurPageSize 1]} {
 		;# New size or orientation
@@ -1396,9 +1420,9 @@ proc ::tclfpdf::_beginpage { orientation size rotation} {
 		        set w  [lindex $size 1];
 		        set h  [lindex $size 0];
 		}
-		set wPt  [expr $w*$k];
-		set hPt   [expr $h*$k];
-		set PageBreakTrigger  [ expr $h-$bMargin];
+		set wPt [expr $w*$k];
+		set hPt [expr $h*$k];
+		set PageBreakTrigger [expr $h-$bMargin];
 		set CurOrientation  $orientation;
 		set CurPageSize  $size;
 	}
@@ -1409,9 +1433,9 @@ proc ::tclfpdf::_beginpage { orientation size rotation} {
 		if {$rotation%90!=0} {
 			Error "Incorrect rotation value: $rotation";
 		}
-		set CurRotation $rotation;
 		set PageInfo($page,rotation) $rotation;		
 	}
+	set CurRotation $rotation;
 }
 
 proc ::tclfpdf::_endpage { } {
@@ -1757,9 +1781,35 @@ proc ::tclfpdf::_putstreamobject { data }  {
 	_put "endobj";
 }
 
+proc ::tclfpdf::_putlinks { n } {
+	variable PageLinks; variable links; variable PageSizes; variable PageInfo; variable DefPageSize;
+	variable k; variable DefOrientation;
+
+	set lpl [array get PageLinks $n,* ]
+	foreach {kpl vpl} $lpl {
+		lassign $vpl pl(0) pl(1) pl(2) pl(3) pl(4) pl(5)
+		_newobj;
+		set rect  [format "%.2f %.2f %.2f %.2f" $pl(0) $pl(1) [expr $pl(0)+$pl(2)] [expr $pl(1)-$pl(3)]];
+		set s "<</Type /Annot /Subtype /Link /Rect \[$rect\] /Border \[0 0 0\] ";
+		if {![string is integer $pl(4)]} {
+			append s "/A <</S /URI /URI [_textstring $pl(4)]>>>>"; # URI need parenthesis but it come from _textstring
+		} else {
+			lassign $links($pl(4)) l(0) l(1);
+			if {[isset PageInfo($l(0),size)] } {
+				lassign $PageSizes($l(0)) PS(0) PS(1);
+				set h1 $PS(1);
+			} else {
+				set h1 [ expr  { $DefOrientation == "P" } ?[ lindex $DefPageSize 1]*$k : [lindex $DefPageSize 0]*$k];
+			}	
+	                append s [format "/Dest \[%d 0 R /XYZ 0 %.2f null\]>>" $PageInfo($l(0),n) [expr $h1-$l(1)*$k]];
+	        }
+		_put $s;
+		_put "endobj";
+	}
+}
+
 proc ::tclfpdf::_putpage { n0 } {
-	variable PageInfo; variable DefPageSize;
-	variable k; variable DefOrientation; variable WithAlpha;
+	variable PageInfo; variable WithAlpha;
 	variable n; variable AliasNbPages; variable pages; variable page;
 	variable PageLinks; 
 	
@@ -1774,26 +1824,14 @@ proc ::tclfpdf::_putpage { n0 } {
 		_put "/Rotate PageInfo($n,rotation)";
 	}
 	_put "/Resources 2 0 R" ;
-	if {[isset PageLinks($n0)] } {
-	        ;# Links
-	        set annots "/Annots \[";
-	        foreach {pl(0) pl(1) pl(2) pl(3) pl(4)} $PageLinks($n0) {
-	                set rect  [format "%.2f %.2f %.2f %.2f" $pl(0) $pl(1) [expr $pl(0)+$pl(2)] [expr $pl(1)-$pl(3)]];
-	                append annots "<</Type /Annot /Subtype /Link /Rect \[$rect\] /Border \[0 0 0\] ";
-	                if {![string is integer $pl(4)]} {
-	                        append annots "/A <</S /URI /URI [_textstring $pl(4)]>>>>"; # URI need parenthesis but it come from _textstring
-			} else {
-	                        lassing $links($pl(4)) l(0) l(1);
-				if {[isset PageInfo($l(0),size)] } {
-					lassign $PageSizes($l(0)) PS(0) PS(1);
-					set h1 $PS(1);
-				} else {
-					set h1 [ expr DefOrientation == "p" ? $DefPageSize(1)*$k : $DefPageSize(0)*$k];
-				}	
-	                        append annots [format "/Dest \[%d 0 R /XYZ 0 %.2f null\]>>" $PageInfo($l(0),n) [expr $h1-$l(1)*$k]];
-	                }
-	        }
-	        _put "$annots\]";
+	if {[isset PageLinks($n0,* ] } {
+		set s "/Annots \[";
+		set lpl [array get PageLinks $n0,* ]
+		foreach {ipl pl} $lpl  {
+			append s "[lindex $pl 5] 0 R ";
+		}
+		append s "\]";
+	        _put "$s";
 	}
 	if {$WithAlpha} {
 		_put "/Group <</Type /Group /S /Transparency /CS /DeviceRGB>>";	
@@ -1809,15 +1847,24 @@ proc ::tclfpdf::_putpage { n0 } {
 		 set pages($n0)  [string map "$AliasNbPages $page" $pages($n0)];
 	}
 	_putstreamobject $pages($n0);
+	;#Link annotations
+	_putlinks $n0;
 }
 
 proc ::tclfpdf::_putpages { } {
 	 variable page; variable PageInfo; variable DefOrientation; 
-	 variable DefPageSize; variable k; variable n;
+	 variable DefPageSize; variable k; variable n; variable PageLinks;
 
 	set nb  $page;
+	set nn $n;
 	for {set n1 1} {$n1<=$nb } {incr n1} {
-		set PageInfo($n1,n) [expr $n+1+2*($n1-1)]
+		set PageInfo($n1,n)  [ incr nn ];
+		incr nn ;
+		set lpl [array get PageLinks $n1,* ]
+		foreach {ipl pl} $lpl  {
+			lappend pl [incr nn]
+			set PageLinks($ipl) $pl
+		}
 	}
 	for {set n2 1} {$n2<=$nb } {incr n2} {
 		_putpage $n2		
@@ -2359,10 +2406,9 @@ proc ::tclfpdf::_putresources { } {
 }
 
 proc ::tclfpdf::_putinfo { } {
-	variable TCLFPDF_VERSION; variable metadata;
+	variable metadata; variable CreationDate;
 	
-	set metadata(Producer) "TCLFPDF $TCLFPDF_VERSION";
-	set metadata(CreationDate) "D:[clock format [clock seconds] -format %Y%m%d%H%M%S]";
+	set metadata(CreationDate) $CreationDate;
 	foreach { k1 v1 } [array get metadata]  {
 		_put "/$k1 [_textstring $v1]";
 	}
@@ -2405,7 +2451,9 @@ proc ::tclfpdf::_puttrailer { } {
 
 proc ::tclfpdf::_enddoc { } {
 	variable offsets; variable state;
-	variable n;
+	variable n; variable CreationDate;	
+	
+	set CreationDate "D:[clock format [clock seconds] -format %Y%m%d%H%M%S]";
 	_putheader ;
 	_putpages ;
 	_putresources ;
