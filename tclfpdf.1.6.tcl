@@ -1471,12 +1471,13 @@ proc ::tclfpdf::_loadfont { font } {
 
 proc ::tclfpdf::_escape { s } {
 	;# Escape special characters in strings
-	set s  [string map {"\\" "\\\\"} $s];
-	set s  [string map {"(" "\\("}  $s];
-	set s  [string map {")" "\\)"}  $s];
-	set s  [string map {"\r" "\\r"} $s];
-	set s  [string map {"\t" "\\t"} $s];
-	return $s;
+	return [string map {
+			"\\" "\\\\"
+			"(" "\\("
+			")" "\\)"
+			"\r" "\\r"
+			"\t" "\\t"
+			} $s]
 }
 
 proc ::tclfpdf::_textstring { s } {
