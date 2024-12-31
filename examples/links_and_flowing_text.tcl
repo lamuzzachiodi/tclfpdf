@@ -11,8 +11,8 @@ proc WriteHTML { html } {
     #  HTML parser
     set html [ string map {\n "" } $html ]
     set a0 {}
-    regsub  -all "<(.*?)>" $html "»&»" a0
-    set a1 [split $a0 »]
+    regsub  -all "<(.*?)>" $html "\u00BB&\u00BB" a0
+    set a1 [split $a0 \u00BB]
     foreach i0 $a1 {
 	lappend a [string map { < "" > "" } $i0 ]
     }
