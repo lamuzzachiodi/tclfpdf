@@ -65,7 +65,7 @@ namespace eval ::tclfpdf:: {
 
 	variable TCLFPDF_FONTPATH "[file join [pwd] [file dirname [info script]]]/font"
 	
-	set SYSTEM_TTFONTS ""
+	variable SYSTEM_TTFONTS ""
 	switch -- $::tcl_platform(platform) {
 		windows { set SYSTEM_TTFONTS "[file normalize $::env(SystemRoot)/fonts]" }
 		unix { set SYSTEM_TTFONTS "/usr/share/fonts"}
