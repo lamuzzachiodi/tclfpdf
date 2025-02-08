@@ -1,1 +1,1 @@
-package ifneeded tclfpdf 1.6 [list source [file join $dir tclfpdf.1.6.tcl]]
+package ifneeded tclfpdf 1.7 [list source [file join $dir tclfpdf.1.7.tcl]]

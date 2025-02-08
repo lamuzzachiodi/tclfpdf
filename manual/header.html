@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Header</title>
+<link type="text/css" rel="stylesheet" href="tclfpdf.css">
+</head>
+<body>
+<h1>Header</h1>
+<code>Header</code>
+<h2>Description</h2>
+This procedure is used to render the page header. It is automatically called by AddPage and
+should not be called directly by the application. The implementation in TclFPDF is empty, so
+you have to override the procedure if you want a specific processing.
+<h2>Example</h2>
+<div class="doc-source">
+<pre><code>
+proc Header {} {
+    # Select Arial bold 15
+    SetFont Arial B 15;
+    # Move to the right
+    Cell 80;
+    # Framed title
+    Cell 30 10 "Title" 1 0 C;
+    # Line break
+    Ln 20;
+}</code></pre>
+</div>
+<h2>See also</h2>
+<a href="footer.html">Footer</a>.
+<hr style="margin-top:1.5em">
+<div style="text-align:center"><a href="index.html">Index</a></div>
+</body>
+</html>

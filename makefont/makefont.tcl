@@ -1,6 +1,6 @@
 ;# *******************************************************************************
 ;# * Utility to generate font definition files
-;#    Version 1.31.1 (2022)
+;#    Version 1.3.2 (2025)
 ;# * Ported to TCL by L.A. Muzzachiodi
 ;# * Credit:
 ;#  	Version: 1.31 (2019) by  Olivier PLATHEY
@@ -8,7 +8,14 @@
 
 namespace eval ::makefont:: {
 
-source ttfparser.tcl;
+
+variable MF_USERPATH {}; # path of writable folder for save new definitions
+variable MF_PATH [file normalize [file dirname [info script]]];#path of Makefont
+variable MF_FONTS [list [file normalize [file join $MF_PATH "../fonts"]]];
+variable ExitOnError 1;# halt when error occurs ?
+
+source -encoding utf-8 "../misc/util.tcl";
+source -encoding utf-8 ttfparser.tcl;
 
 proc  Message { txt {severity ""} } {
 	set mode "std";
@@ -35,19 +42,24 @@ proc  Warning { txt } {
 }
 
 proc  Error { txt } {
+
+	variable ExitOnError
 	Message $txt "Error:";
-	exit;
+	if { $ExitOnError == 1} {
+		exit;
+	 } else {
+		return -code error $txt
+	 }
 }
 
 proc  LoadMap { enc } {
-	set file [file nativename "[file join [pwd] [file dirname [info script]]]/[string tolower $enc].map"];
-	if { [catch {open $file "rb"} fl]} {
-		Error "Encoding not found:  $enc";
-	}	
+	if { [catch {open $enc "rb"} fl]} {
+		Error "Can't open Encoding :  $enc";
+	}
 	set a [read $fl];
 	close $fl;
 	set lines [split $a \n];
-	array set map {} ;
+	array unset map * ;
 	for {set i 0} {$i<= 255 } {incr i} {
 		set map($i,uv) -1 ;
 		set map($i,name)  ".notdef" ;
@@ -120,17 +132,13 @@ proc  GetInfoFromTrueType { file embed subset map } {
 	set info(Descender) [ expr round($k*$typoDescender)];
 	set info(UnderlineThickness) [expr round($k*$underlineThickness)];
 	set info(UnderlinePosition) [expr round($k*$underlinePosition)];
-	#~ set info(FontBBox) "\\\[[expr round($k*$xMin)] [expr round($k*$yMin)] [expr round($k*$xMax)] [expr round($k*$yMax)]\\\]";
 	set info(FontBBox) "[expr round($k*$xMin)] [expr round($k*$yMin)] [expr round($k*$xMax)] [expr round($k*$yMax)]";
-	#~ set info(FontBBox,0) [expr round($k*$xMin)]; 
-	#~ set info(FontBBox,1)	[expr round($k*$yMin)];
-	#~ set info(FontBBox,2)	[expr round($k*$xMax)]; 
-	#~ set info(FontBBox,3)	[expr round($k*$yMax)];
 	set info(CapHeight)  [expr round($k*$capHeight)];
 	set info(MissingWidth) [expr round($k*$glyphs(0,w))];
 	for {set j 0 } {$j <=255 } {incr j } {
-		set widths($j) $info(MissingWidth) ;
+			set widths($j) $info(MissingWidth) ;
 	}
+	set charmissing {}
 	foreach { c  _v } [array get _map] {
 		array unset v *;
 		array set v $_v;
@@ -140,9 +148,12 @@ proc  GetInfoFromTrueType { file embed subset map } {
 				set w $glyphs($id,w);
 				set widths($c) [expr round($k*$w)];
 			} else {
-				Warning "Character $v(name) is missing";
+				append charmissing " $v(name) ,";
 			}
 		}
+	}
+	if {$charmissing ne {}} {
+		Warning "Character(s) missing: $charmissing";
 	}
 	ParseEnd;
 	set info(Widths) [array get widths];
@@ -243,15 +254,21 @@ proc GetInfoFromType1 { file embed _map } {
 	for {set j 0 } {$j <=255 } {incr j } {
 		set widths($j) $info(MissingWidth) ;
 	}
-	array set map $_map ;
-	foreach {c v} $map { 
+	array set map  [array2list $_map];
+	set charmissing {};
+	foreach {c _v} [array get map] { 
+		array unset v *;
+		array set v $_v;
 		if { $v(name) ne ".notdef" } {
-			if {[isset cw($v(name))] } {
+			if {[isset cw($v(name))] } {			
 				set widths($c) $cw($v(name));
 			} else {
-				Warning "Character $name is missing";
+				append charmissing " $name ,";
 			}
 		}
+	}
+	if {$charmissing ne {} } {
+		Warning "Character(s) missing: $charmissing";
 	}
 	set info(Widths) [array get widths];
 	return [array get info];
@@ -317,9 +334,10 @@ proc  MakeWidthArray { _widths } {
 }
 
 proc MakeFontEncoding { _map } {
+	variable MF_PATH
 	array set map $_map;
 	# Build differences from reference encoding
-	array set ref [LoadMap cp1252];
+	array set ref [LoadMap [file normalize [file join $MF_PATH cp1252.map]]];
 	set s "";
 	set last 0;
 	for {set c 32} {$c<=255} {incr  c} {
@@ -336,14 +354,15 @@ proc MakeFontEncoding { _map } {
 
 proc MakeUnicodeArray { _map } {
 	# Build mapping to Unicode values
-	array set ranges {};
+	
+	array unset ranges *;
 	set idx_rgs -1;
 	foreach  { c _v } [lsort -index 0 -integer -stride 2 [array2list $_map]] {
 		array unset v *;
 		array set v $_v;
-		set uv $v(uv);
+		set uv $v(uv);		
 		if {$uv!=-1} {
-			if {[isset range]} {
+			if {[isset range 0]} {
 				if {$c==[ expr $range(1)+1] && $uv== [expr $range(3)+1]} {
 					incr range(1);
 					incr range(3);
@@ -373,7 +392,9 @@ proc MakeUnicodeArray { _map } {
 
 proc  SaveToFile {file s mode} {
 
-	if {[catch {open $file w} f] } {
+	variable MF_USERPATH;
+	
+	if {[catch {open $MF_USERPATH/$file w} f] } {
 		Error "Can't write to file $file";
 	}
 	if {$mode == "b"} {
@@ -414,10 +435,10 @@ proc MakeDefinitionFile {file type enc embed subset map _info } {
 }
 
 proc MakeFont {fontfile {enc "cp1252"} {embed 1}  {subset 1}} {
-	# Generate a font definition file
-	if {![file exists $fontfile] } {
-		Error "Font file not found: $fontfile";
-	}	
+	variable MF_PATH
+	variable MF_USERPATH
+	# Generate a font definition
+	CheckFile $fontfile font
 	set ext [file extension $fontfile];
 	if {$ext==".ttf" || $ext==".otf" } {
 		set type "TrueType";
@@ -426,23 +447,100 @@ proc MakeFont {fontfile {enc "cp1252"} {embed 1}  {subset 1}} {
 	} else {
 		Error "Unrecognized font file extension: $ext";
 	}
+	if {$enc eq {} } {
+		Error "encode file couldn't be empty";
+	}
+	if { [file extension $enc] eq {} } {
+		set enc [file normalize [file join $MF_PATH $enc.map]]
+	}
+	CheckFile $enc encode
+	if {$embed ni {0 1} } {
+		Error "embed must be boolean";
+	}
+	if {$subset ni {0 1} } {
+		Error "subset must be boolean";
+	}
 	set map [LoadMap $enc];
 	if {$type=="TrueType"} {
 		array set info [GetInfoFromTrueType $fontfile $embed $subset $map];
 	} else {
 		array set info [GetInfoFromType1 $fontfile $embed $map];
-	}	
-	set basename [file rootname $fontfile];
-	if {$embed} {
-		set file  "$basename.z";
+	}
+	SetUserPath $MF_USERPATH
+	set basename [file rootname [file tail $fontfile]]
+	set encodename [file rootname [file tail $enc]]
+	if {$embed} {		
+		set file  "$basename\_$encodename.z";
 		SaveToFile $file [zlib compress $info(Data)] b;
 		set info(File) $file;
 		Message "Font file compressed: $file";
 	}
 	set _info [array get info];
-	MakeDefinitionFile $basename.tcl $type $enc $embed $subset $map $_info;
+	MakeDefinitionFile $basename\_$encodename.tcl $type $enc $embed $subset $map $_info;
 	Message "Font definition file generated: $basename.tcl";
 }
 
+proc SetExitOnError { { bool 1} } {
+
+	variable ExitOnError
+	switch -- $bool  {
+		0   { set ExitOnError  0 }
+		1   { set ExitOnError 1 }
+		default { Error "Parameter no valid calling SetExitOnError" }
+	}
+}
+
+proc SetUserPath { path } {
+
+	variable  MF_USERPATH;
+	#to check existence of directory
+	if {[file exists $path ] ==1 } {
+		if { [file writable $path ]== 1  } {
+			set  MF_USERPATH [ file normalize $path ];
+		} else {
+			Error "Folder isn't writable, setting User Path: $path";
+		}
+	} else {
+	# folder doesn't exist
+		if { [catch [file mkdir [file normalize $path]] err]} {
+			Error "Can't create folder $path : $err";
+		} else {
+			set MF_USERPATH [ file normalize $path ];		
+		}
+	}
+}
+
+proc CheckFile { file desc } {
+
+	if {$file eq {} } {
+		Error "$desc couldn't be empty"
+		return 0
+	}
+	if { ![file exist $file]} {
+		Error "Could not find $desc\n $file"
+		return 0
+	}
+	if { ![file isfile $file]} {
+		Error "$desc must be a file"
+		return 0
+	}
+}
+
+# set default value of user and fonts path
+	switch -- $::tcl_platform(platform) {
+			windows 	{	set _systemfonts [list "$::env(SystemRoot)/fonts"]
+						set _userpath "$::env(LOCALAPPDATA)/tclfpdf/fonts" }
+			unix 		{ 	set _systemfonts [list "/usr/share/fonts" "/usr/local/share/fonts" "~/.fonts"]
+						set _userpath "$::env(HOME)/.local/share/tclfpdf/fonts" }
+			macintosh { 	set  _systemfonts [list "/System/Library/Fonts" "/Libray/Fonts"] 
+						set _userpath "$::env(HOME)/tclfpdf/fonts" }
+			default { Error "Missing system path font.\n The platform: $::tcl_platform(platform) isn't defined."}
+	}
+	foreach p $_systemfonts {
+		if { [file isdirectory $p ]== 1 } {
+			lappend MF_FONTS [ file normalize $p ];
+		}
+	}
+	SetUserPath $_userpath
 #--- End of Namespace definition
 }

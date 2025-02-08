@@ -14,7 +14,8 @@
 ;# * modification of the file.                                                    *
 ;# *                                                                              *
 ;# *******************************************************************************
-;# Ported to TCL by L. A. Muzzachiodi (2022)
+;# Version 1.1  (2024 )
+;# Ported to TCL by L. A. Muzzachiodi
 
 ;# Define the value used in the "head" table of a created TTF file
 ;# 0x74727565 "true" for Mac
@@ -1088,8 +1089,8 @@ proc ::tclfpdf::ttf_getCMAP4 {unicode_cmap_offset } {
 			if {$idRangeOffset($n) == 0} {
 				set glyph [expr ($unichar + $idDelta($n)) & 0xFFFF];
 			} else {
-				set $offset [expr ($unichar - $startCount($n)) * 2 + $idRangeOffset($n)];
-				set $offset [ expr $idRangeOffset_start + 2 * $n + $offset];
+				set offset [expr ($unichar - $startCount($n)) * 2 + $idRangeOffset($n)];
+				set offset [ expr $idRangeOffset_start + 2 * $n + $offset];
 				if {$offset >= $limit} {
 					set glyph 0;
 				} else {

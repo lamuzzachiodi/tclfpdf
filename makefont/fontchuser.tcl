@@ -1,3 +1,4 @@
+ # Extracted from https://www.tcl-lang.org/man/tcl/TkCmd/fontchooser.htm
 
 proc fontchooserDemo {} {
     wm title . "Font Chooser Demo"

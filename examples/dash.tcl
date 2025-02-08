@@ -14,4 +14,4 @@ SetDash 4 2; #4mm on, 2mm off
 Rect 20 30 170 20;
 SetDash; #restores no dash
 Line 20 55 190 55;
-Output "dash.tcl";
+Output "dash.pdf";

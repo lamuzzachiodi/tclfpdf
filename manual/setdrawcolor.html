@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>SetDrawColor</title>
+<link type="text/css" rel="stylesheet" href="tclfpdf.css">
+</head>
+<body>
+<h1>SetDrawColor</h1>
+<code>SetDrawColor r ?g  b?</code>
+<h2>Description</h2>
+Defines the color used for all drawing operations (lines, rectangles and cell borders). It
+can be expressed in RGB components or gray scale. The procedure can be called before the first
+page is created and the value is retained from page to page.
+<h2>Parameters</h2>
+<dl class="param">
+<dt><code>r</code></dt>
+<dd>
+If <code>g</code> and <code>b</code> are given, red component; if not, indicates the gray level.
+Value between 0 and 255.
+</dd>
+<dt><code>g</code></dt>
+<dd>
+Green component (between 0 and 255).
+</dd>
+<dt><code>b</code></dt>
+<dd>
+Blue component (between 0 and 255).
+</dd>
+</dl>
+<h2>See also</h2>
+<a href="setfillcolor.html">SetFillColor</a>,
+<a href="settextcolor.html">SetTextColor</a>,
+<a href="line.html">Line</a>,
+<a href="rect.html">Rect</a>,
+<a href="cell.html">Cell</a>,
+<a href="multicell.html">MultiCell</a>.
+<hr style="margin-top:1.5em">
+<div style="text-align:center"><a href="index.html">Index</a></div>
+</body>
+</html>

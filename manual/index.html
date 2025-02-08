@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>TCLFPDF 1.7 Reference Manual</title>
+<link type="text/css" rel="stylesheet" href="tclfpdf.css">
+</head>
+<body>
+<h1>TCLFPDF 1.7 Reference Manual</h1>
+<a href="acceptpagebreak.html">AcceptPageBreak</a> - accept or not automatic page break<br>
+<a href="addfont.html">AddFont</a> - add a new font<br>
+<a href="addlink.html">AddLink</a> - create an internal link<br>
+<a href="addpage.html">AddPage</a> - add a new page<br>
+<a href="aliasnbpages.html">AliasNbPages</a> - define an alias for number of pages<br>
+<a href="cell.html">Cell</a> - print a cell<br>
+<a href="close.html">Close</a> - terminate the document<br>
+<a href="error.html">Error</a> - fatal error<br>
+<a href="footer.html">Footer</a> - page footer<br>
+<a href="getpageheight.html">GetPageHeight</a> - get current page height<br>
+<a href="getpagewidth.html">GetPageWidth</a> - get current page width<br>
+<a href="getstringwidth.html">GetStringWidth</a> - compute string length<br>
+<a href="getx.html">GetX</a> - get current x position<br>
+<a href="gety.html">GetY</a> - get current y position<br>
+<a href="header.html">Header</a> - page header<br>
+<a href="image.html">Image</a> - output an image<br>
+<a href="init.html">Init</a> - Initialize values<br>
+<a href="line.html">Line</a> - draw a line<br>
+<a href="link.html">Link</a> - put a link<br>
+<a href="ln.html">Ln</a> - line break<br>
+<a href="multicell.html">MultiCell</a> - print text with line breaks<br>
+<a href="output.html">Output</a> - save or send the document<br>
+<a href="pageno.html">PageNo</a> - page number<br>
+<a href="rect.html">Rect</a> - draw a rectangle<br>
+<a href="setauthor.html">SetAuthor</a> - set the document author<br>
+<a href="setautopagebreak.html">SetAutoPageBreak</a> - set the automatic page breaking mode<br>
+<a href="setcompression.html">SetCompression</a> - turn compression on or off<br>
+<a href="setcreator.html">SetCreator</a> - set document creator<br>
+<a href="setdisplaymode.html">SetDisplayMode</a> - set display mode<br>
+<a href="setdrawcolor.html">SetDrawColor</a> - set drawing color<br>
+<a href="setfillcolor.html">SetFillColor</a> - set filling color<br>
+<a href="setfont.html">SetFont</a> - set font<br>
+<a href="setfontsize.html">SetFontSize</a> - set font size<br>
+<a href="setkeywords.html">SetKeywords</a> - associate keywords with document<br>
+<a href="setleftmargin.html">SetLeftMargin</a> - set left margin<br>
+<a href="setlinewidth.html">SetLineWidth</a> - set line width<br>
+<a href="setlink.html">SetLink</a> - set internal link destination<br>
+<a href="setmargins.html">SetMargins</a> - set margins<br>
+<a href="setrightmargin.html">SetRightMargin</a> - set right margin<br>
+<a href="setsubject.html">SetSubject</a> - set document subject<br>
+<a href="settextcolor.html">SetTextColor</a> - set text color<br>
+<a href="settitle.html">SetTitle</a> - set document title<br>
+<a href="settopmargin.html">SetTopMargin</a> - set top margin<br>
+<a href="setx.html">SetX</a> - set current x position<br>
+<a href="setxy.html">SetXY</a> - set current x and y positions<br>
+<a href="sety.html">SetY</a> - set current y position and optionally reset x<br>
+<a href="text.html">Text</a> - print a string<br>
+<a href="write.html">Write</a> - print flowing text<br>
+<br>
+<hr>
+<h1>F.A.Q </h1>
+
+<h2> The script cannot find the fonts. Can I configure where it should be searched ?</h2>
+The script - according to the platform - preload the paths where search for fonts. <br>
+But if after searching in each one of these, the font can't be find, you can still use the 
+procedure <a href="setsystemfonts.html"> SetSystemFonts</a> for add new locations.<br>
+
+<h2>How add new fonts and encodings ?</h2>
+The script include some definitions files but if you need use your own you have two ways. Althoug the
+true type fonts are load on the fly also you can use the script <a href="makefont.html">makefont.tcl</a> 
+to generate new definitions for .otf  or .pfb files (and .ttf of course). <br>
+
+<h2>The script halt immediatly after an error. Can i get some aditional information about it?</h2>
+You can use the procedure <a href="showmoreinfoerror.html">ShowMoreInfoError</a>- in order to get some extra data.<br>
+
+<h2> It seems there are some files that the script want to save but this causes an error? Can i set what
+folder should be used ?. </h2>
+The script need a writable folder to work. This will be use to keep reusable definition files that make 
+the process - a little - faster. Eventually you could put the font files that you use but not wan't/can't install in the 
+system, for example. At the beginning the script pre-load a folder - according to platform- but you can choose other 
+using the procedure <a href="setuserpath.html">SetUserPath</a>.
+<br>
+<br>
+</body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<title>Write</title>
+<link type="text/css" rel="stylesheet" href="tclfpdf.css">
+</head>
+<body>
+<h1>Write</h1>
+<code>Write h  txt ?link?</code>
+<h2>Description</h2>
+This procedure prints text from the current position. When the right margin is reached (or the \n
+character is met) a line break occurs and text continues from the left margin. Upon procedure exit,
+the current position is left just at the end of the text.
+<br>
+It is possible to put a link on the text.
+<h2>Parameters</h2>
+<dl class="param">
+<dt><code>h</code></dt>
+<dd>
+Line height.
+</dd>
+<dt><code>txt</code></dt>
+<dd>
+String to print.
+</dd>
+<dt><code>link</code></dt>
+<dd>
+URL or identifier returned by AddLink.
+</dd>
+</dl>
+<h2>Example</h2>
+<div class="doc-source">
+<pre><code># Begin with regular font
+SetFont Arial "" 14 ;
+Write 5 "Visit";
+# Then put a blue underlined link
+SetTextColor 0 0 255;
+SetFont "" U;
+Write 5 "www.fpdf.org" "http://www.fpdf.org";</code></pre>
+</div>
+
+<h2>See also</h2>
+<a href="setfont.html">SetFont</a>,
+<a href="settextcolor.html">SetTextColor</a>,
+<a href="addlink.html">AddLink</a>,
+<a href="multicell.html">MultiCell</a>,
+<a href="setautopagebreak.html">SetAutoPageBreak</a>.
+<hr style="margin-top:1.5em">
+<div style="text-align:center"><a href="index.html">Index</a></div>
+</body>
+</html>

@@ -1,7 +1,7 @@
 ;# *******************************************************************************
 ;# *******************************************************************************
 ;# * Utility to parse TTF font files
-;#    Version 1.1 (2020)
+;#    Version 1.2 (2025)
 ;# * Ported to TCL by L.A. Muzzachiodi
 ;# * Credit:
 ;#  	Version: 1.1 (2019) by Olivier PLATHEY
@@ -32,7 +32,6 @@
 	variable underlinePosition;
 	variable underlineThickness;
 	variable isFixedPitch;
-
 
 proc ParseInit { file} {
 	variable f; 
@@ -154,7 +153,7 @@ proc ParseLoca {} {
        variable glyphs;
 
 	Seek "loca";
-	array set offsets {};
+	array unset offsets *;
 	set idx -1
 	if {$indexToLocFormat==0 } {
 		#Short format
@@ -376,7 +375,7 @@ proc ParsePost { } {
 		Skip 2;# numberOfGlyphs
 		array unset glyphNameIndex *;
 		set gni_idx -1;
-		array set names {};
+		array unset names *;
 		set numNames 0;
 		for {set i 0} {$i<$numGlyphs} { incr i} {
 			set index [ReadUShort];
@@ -410,7 +409,7 @@ proc Subset { _chars } {
 	variable chars;
 	variable subsettedGlyphs;
 
-	set numc 0
+	set subsettedGlyphs {};
 	AddGlyph 0;
 	set subsettedChars {};
 	foreach  {k char} $_chars {		
@@ -458,7 +457,7 @@ proc BuildCmap {} {
 	}	
 	# Divide charset in contiguous segments
 	set _chars [lsort -integer $subsettedChars] ;
-	array set segments {};
+	array unset segments *;
 	set s_idx -1;
 	set lchars_0 [lindex $_chars 0];
 	array set segment " 0 $lchars_0 1 $lchars_0 ";
@@ -476,13 +475,13 @@ proc BuildCmap {} {
 	set segCount [array size segments];
 
 	# Build a Format 4 subtable
-	array set startCount {};
+	array unset startCount *;
 	set sc_idx -1;
-	array set endCount {};
+	array unset endCount *;
 	set ec_idx -1;
-	array set idDelta {};
+	array unset idDelta *;
 	set id_idx -1;
-	array set idRangeOffset {};
+	array unset idRangeOffset *;
 	set iro_idx -1;
 	set glyphIdArray {};
 	set start {};
@@ -497,7 +496,7 @@ proc BuildCmap {} {
 			# Segment with multiple chars
 			set idDelta([incr id_idx]) 0;
 			set idRangeOffset([incr iro_idx]) [expr [string len $glyphIdArray] + ($segCount-$i)*2];
-			for {set c $start} {$c<=$end} {incr c} {			
+			for {set c $start} {$c<=$end} {incr c} {	
 				set ssid $glyphs($chars($c),ssid);
 				append glyphIdArray [ binary format "Su" $ssid ];
 			}
@@ -601,7 +600,6 @@ proc BuildGlyf {} {
 	set data {};
 
 	array set lglyphs [array2list [array get glyphs]];
-
 	foreach  id $subsettedGlyphs {
 		array unset glyph *; 
 		array set glyph $lglyphs($id);
@@ -614,7 +612,7 @@ proc BuildGlyf {} {
 				set glyph_data [ _substr_replace $glyph_data [binary format "Su" $ssid] $offset 2 ];
 			}
 		}
-		append data $glyph_data;		
+		append data $glyph_data;
 	}
 	SetTable glyf $data;
 }
@@ -665,7 +663,7 @@ proc BuildPost {} {
 proc BuildFont {} {
 	variable tables;
 
-	array set tags {};
+	array unset tags *;
 	set t_idx -1;
 	set ltags [list cmap "cvt " fpgm glyf head hhea hmtx loca maxp name post prep];
 	foreach  tag $ltags {

@@ -182,14 +182,14 @@ proc _substr_replace {str new start length}  {
 proc utf8substr { str start {length "all"}} {
 	set len [string length $str];
 	if {$length == "all"} {
-		set length [expr $len - $start] 
+		set length [expr $len - $start]
 	}
 	if {$start >= $len || $length < 1} {
 		return "";
 	}
 	set last [expr $start + $length -1]
 	if {[utf8len $str] == $len} {
-		return [string range $str $start $last]	
+		return [string range $str $start $last]
 	}
 	set usado 0;
 	set charn -1;
@@ -212,7 +212,7 @@ proc utf8substr { str start {length "all"}} {
 		}
 		if {$usado >= $length} break;
 		set i $j ;
-	}	
+	}
 	return $sub
 }
 
@@ -313,4 +313,12 @@ proc bin2hex { str} {
 	set hex {};
 	binary scan $str H* hex;
 	return $hex;
+}
+
+proc random {min max} {
+    return [expr {int(rand()*($max-$min+1)+$min)}]
+}
+
+proc _procexists { p } {
+   return uplevel 1 [expr {[llength [info procs $p]] > 0}]
 }

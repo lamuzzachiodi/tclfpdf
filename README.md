@@ -1,8 +1,7 @@
-# **TCLFPDF 1.6 (2023)** #
+# **TCLFPDF 1.7 (2025)** #
 ## *Port of tFPDF (PHP) by  by Ian Back and Tycho Veltmeijer (modified version of FPDF by Olivier Plathey) to TCL* ##
 
 ----------
-
 
 ## Objective/Objetivo ##
 
@@ -22,10 +21,19 @@ He tratado de ser lo más fiel posible al original en PHP, manteniendo los nombr
 
 Sus comentarios o sugerencias serán bienvenidos.
 
-
-
 __*Luis Alejandro Muzzachiodi (2023)*__
 
+
+----------
+## Changes in 1.7 ##
+
+* Minor fixes.
+* Improved font and user directories settings.
+* Improved error handling.
+* Added a gui for use with makefont script.
+* Added a addon to generate a multi-line cell.
+
+Thank to everyone who contributed with suggestions or bug reports.
 
 ----------
 ### Notes ###
