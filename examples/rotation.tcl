@@ -3,7 +3,7 @@ namespace import  ::tclfpdf::*
 
 Init;
 AddPage;
-SetFont Arial "" 40;
+SetFont "Arial" "" 40;
 TextWithRotation 50 65 "Hello" 45 -45;
 SetFontSize 30;
 TextWithDirection 110 50 "world!" L;

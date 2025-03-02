@@ -1,17 +1,17 @@
 ;# *******************************************************************************
 ;# tclfpdf.tcl 
-;# Version: 1.7 (2024)
+;# Version: 1.7.1 (2025)
 ;# Ported to TCL by L. A. Muzzachiodi
 ;# Credits:
 ;# Based on tFPDF 1.33 by Ian Back <ianb@bpm1.com>
 ;# and Tycho Veltmeijer <tfpdf@tychoveltmeijer.nl> (versions 1.30+)
-;# wich is based on fpdf.php 1.8.2 by Olivier Plathey 
+;# wich is based on fpdf.php 1.85 by Olivier Plathey 
 ;# Parse of JPEG based on pdf4tcl 0.8 by Peter Spjuth
 ;# *******************************************************************************
 ;# Note: 
 ;# the definition of core fonts have a diference: the uv index in FPDF, not tfpdf, cause a bigger file (?)
 
-set version 1.7
+set version 1.7.1
 package provide tclfpdf $version
 package require Tk
 namespace eval ::tclfpdf:: {
@@ -69,12 +69,11 @@ namespace eval ::tclfpdf:: {
 	;# ShowMoreInfoError , SetSystemFonts and SetUserPath only in TCLFPDF
 
 	;#These will be set at the end
-	variable TCLFPDF_USERPATH		;# path of writeable folder for cache
+	variable TCLFPDF_USERPATH			;# path of writeable folder for cache
 	variable TCLFPDF_COREFONTPATH 		;# path of core fonts definitions and ttfont source
 	variable TCLFPDF_SYSTEMFONTPATH		;# list of path for load fonts
 
-
-	variable VERSION $version
+	variable VERSION 			;#
 	variable unifontSubset		;#
 	variable page                      	;# current page number
 	variable n                           	;# current object number
@@ -140,6 +139,7 @@ namespace eval ::tclfpdf:: {
 	variable TraceAfterError		;#Show more info after error
 	
 proc ::tclfpdf::Init { { orientation P } { unit mm } { size A4 } } {
+	global version
 	variable w; variable h; variable StdPageSizes;
 	;# Initialization of properties 
 	variable state 0;
@@ -224,10 +224,11 @@ proc ::tclfpdf::Init { { orientation P } { unit mm } { size A4 } } {
 	SetDisplayMode "default" ;
 	;# Enable compression
 	SetCompression 1;
+	;#Version TCLFPDF
+	variable VERSION $version;
 	;#Metadata
-	variable VERSION;
 	variable metadata; 
-	array set metadata "Producer TCLFPDF$VERSION";
+	array set metadata [list Producer "TCLFPDF $VERSION"];
 	
 	;# Set default PDF version number
 	variable PDFVersion  "1.3";
@@ -490,6 +491,9 @@ proc ::tclfpdf::PageNo { } {
 
 proc ::tclfpdf::SetDrawColor { r {g ""} {b ""}  } {
 	variable page; variable DrawColor;
+	if { ($g == "" ^ $b=="") } {
+		Error "Setting Draw Color : missing g or b parameter";
+	}
 	;# Set color for all stroking operations
 	if {($r==0 && $g==0 && $b==0) || $g==""} {
 		set DrawColor [format "%.3f G" [expr $r/255.00]];
@@ -502,7 +506,10 @@ proc ::tclfpdf::SetDrawColor { r {g ""} {b ""}  } {
 }
 
 proc ::tclfpdf::SetFillColor { r  {g ""} {b ""} } {
-	variable FillColor; variable page; variable TextColor;variable ColorFlag;
+	variable FillColor; variable page; variable TextColor;variable ColorFlag;	
+	if { ($g == "" ^ $b=="") } {
+		Error "Setting Fill Color : missing g or b parameter";
+	}
 	;# Set color for all filling operations
 	if { ($r==0 && $g==0 && $b==0) || $g==""} {
 		set FillColor  [format "%.3f g" [expr $r/255.00]];
@@ -517,6 +524,9 @@ proc ::tclfpdf::SetFillColor { r  {g ""} {b ""} } {
 
 proc ::tclfpdf::SetTextColor { r  {g ""} {b ""} } {
 	variable TextColor; variable ColorFlag;variable FillColor;
+	if { ($g == "" ^ $b=="") } {
+		Error "Setting Text Color : missing g or b parameter";
+	}
 	;# Set color for text
 	if { ($r==0 && $g==0 && $b==0) || $g==""} {
 		set TextColor  [format "%.3f g" [expr $r/255.00]];
@@ -852,7 +862,7 @@ proc ::tclfpdf::AcceptPageBreak { } {
 proc ::tclfpdf::Cell {w1 {h1 0} {txt ""} {border 0} {ln 0} {align ""} {fill 0} {link ""}} {
 	variable k;variable y;variable InFooter;variable InHeader;variable h;
 	variable x; variable ws; variable rMargin; variable cMargin; variable PageBreakTrigger;
-	variable ColorFlag;variable TextColor;variable lasth; variable w; variable FontSize;
+	variable ColorFlag;variable TextColor;variable lasth; variable w; variable FontSize; variable FontSizePt;
 	variable underline;variable lMargin;variable CurOrientation; variable CurPageSize;
 	variable CurRotation; variable unifontSubset; variable CurrentFont; variable fonts;
 	;# Output a cell
@@ -904,13 +914,15 @@ proc ::tclfpdf::Cell {w1 {h1 0} {txt ""} {border 0} {ln 0} {align ""} {fill 0} {
 		if {![isset CurrentFont]} {
 			Error " No font has been set";
 		}
-		if {$align=="R"} {
-		        set dx [expr $w1-$cMargin- [GetStringWidth $txt]];
-		} elseif {$align=="C"} {
-		        set dx [expr ($w1-[GetStringWidth $txt ])/2.00];
-		} else {
-		        set dx $cMargin;
-		}	
+		if { $align=="J" || $align=="" } {
+			set align "L"
+		}
+		switch -- $align {
+			"R"  { set dx [expr $w1-$cMargin- [GetStringWidth $txt]] }
+			"C"  { set dx [expr ($w1-[GetStringWidth $txt ])/2.00] } 
+			"L"   { set dx $cMargin }
+			default { Error " Invalid cell align: $align" }
+		}
 		if {$ColorFlag ==1 } {
 		        append s " q $TextColor ";
 		}
@@ -922,15 +934,15 @@ proc ::tclfpdf::Cell {w1 {h1 0} {txt ""} {border 0} {ln 0} {align ""} {fill 0} {
 				}
 			}
 			set space [_escape [_UTF8toUTF16BE " " 0]];
-			append s [format "BT 0 Tw %.2f %.2f Td \[" [expr ($x+$dx)*$k] [expr $h-($y+.5*$h1+.3*$FontSize)*$k]];
+			append s [format "BT 0 Tw %.2f %.2f Td \[" [expr ($x+$dx)*$k] [expr ($h-($y+0.5*$h1+0.3*$FontSize))*$k]];
 			set t [split $txt ];
 			set numt [llength $t];
 			for {set i 0} {$i<$numt} {incr i} {
-				set tx [lindex $t $];
+				set tx [lindex $t $i];
 				set tx  "([_escape [_UTF8toUTF16BE $tx 0]])";
-				append s [format "%s" $tx];
+				append s [format "%s " $tx];
 				if { ($i+1)<$numt} {
-					set adj [expr  -($w*$k)*1000.00/$FontSizePt];
+					set adj [expr int (-($ws*$k)*1000/$FontSizePt)];
 					append s [format "%d(%s) " $adj $space];
 				}
 			}
@@ -1396,13 +1408,12 @@ proc ::tclfpdf::_getpagesize {size} {
 }
 
 proc ::tclfpdf::_beginpage { orientation size rotation} {
-	variable page; variable pages;variable PageLinks; variable state;
-	variable lMargin; variable tMargin; variable bMargin;
-	variable FontFamily; variable PageSizes;
-	variable DefOrientation; variable DefPageSize;variable CurOrientation;
-	variable CurPageSize; variable x;variable y;variable w; variable h; variable k;
-	variable wPt; variable hPt; variable PageBreakTrigger;
-	variable CurRotation;
+	variable page; variable pages;variable PageLinks; variable PageInfo;
+	variable state; variable lMargin; variable tMargin; variable bMargin;
+	variable FontFamily; variable DefOrientation; 
+	variable DefPageSize; variable CurOrientation; variable CurPageSize;
+	variable x;variable y;variable w; variable h; variable k;
+	variable wPt; variable hPt; variable PageBreakTrigger; variable CurRotation;
 	
 	incr page;
 	set pages($page) {};
@@ -1787,8 +1798,8 @@ proc ::tclfpdf::_putstreamobject { data }  {
 }
 
 proc ::tclfpdf::_putlinks { n } {
-	variable PageLinks; variable links; variable PageSizes; variable PageInfo; variable DefPageSize;
-	variable k; variable DefOrientation;
+	variable PageLinks; variable links;  variable PageInfo; 
+	variable DefPageSize;variable k; variable DefOrientation;
 
 	set lpl [array get PageLinks $n,* ]
 	foreach {kpl vpl} $lpl {
@@ -1801,7 +1812,7 @@ proc ::tclfpdf::_putlinks { n } {
 		} else {
 			lassign $links($pl(4)) l(0) l(1);
 			if {[isset PageInfo($l(0),size)] } {
-				lassign $PageSizes($l(0)) PS(0) PS(1);
+				lassign $Pageinfo($l(0)) PS(0) PS(1);
 				set h1 $PS(1);
 			} else {
 				set h1 [ expr  { $DefOrientation == "P" } ?[ lindex $DefPageSize 1]*$k : [lindex $DefPageSize 0]*$k];
@@ -1822,7 +1833,7 @@ proc ::tclfpdf::_putpage { n0 } {
 	_put "<</Type /Page";
 	_put "/Parent 1 0 R";
 	if {[isset PageInfo($n0,size)] } {
-		lassign $PageSizes($n0,size) PS(0)  PS(1);
+		lassign $PageInfo($n0,size) PS(0)  PS(1);
 	        _put [format "/MediaBox \[0 0 %.2f %.2f\]" $PS(0) $PS(1)];
 	}
 	if {[isset PageInfo($n0,rotation)] } {
@@ -2604,7 +2615,6 @@ proc ::tclfpdf::_SearchPathFile { file } {
 	lappend  declaredpaths $TCLFPDF_COREFONTPATH
 	lappend  declaredpaths $TCLFPDF_USERPATH
 
-
 	foreach p $declaredpaths {
 		if { [file exists "$p/$file"]} {
 			return "$p/$file";
@@ -2622,13 +2632,13 @@ proc ::tclfpdf::_SearchPathFile { file } {
 	}
 
 	;# Script fonts path
-	variable TCLFPDF_COREFONTPATH [list [file normalize "[file dirname [info script]]/font"]]; # path of TCLPDF + font
+	variable TCLFPDF_COREFONTPATH [file normalize "[file dirname [info script]]/font"]; # path of TCLPDF + font
 	;#Setting system and user fonts path
 	switch -- $::tcl_platform(platform) {
 			windows 	{ 	set _systemfonts [list "$::env(SystemRoot)/fonts"] 
 						set	_userpath "$::env(LOCALAPPDATA)/tclfpdf/fonts"
 					}
-			unix 		{ 	set _systemfonts [list "/usr/share/fonts" "/usr/local/share/fonts" "~/.fonts"]
+			unix 		{ 	set _systemfonts [list "/usr/share/fonts" "/usr/local/share/fonts" "$::env(HOME)/.fonts"]
 						set _userpath "$::env(HOME)/.local/share/tclfpdf/fonts"
 					}
 			macintosh { 	set  _systemfonts [list "/System/Library/Fonts" "/Libray/Fonts"] 

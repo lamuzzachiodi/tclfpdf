@@ -1,6 +1,6 @@
 ;# *******************************************************************************
 ;# * Utility to generate font definition files
-;#    Version 1.3.2 (2025)
+;#    Version 1.3.3 (2025)
 ;# * Ported to TCL by L.A. Muzzachiodi
 ;# * Credit:
 ;#  	Version: 1.31 (2019) by  Olivier PLATHEY
@@ -530,7 +530,7 @@ proc CheckFile { file desc } {
 	switch -- $::tcl_platform(platform) {
 			windows 	{	set _systemfonts [list "$::env(SystemRoot)/fonts"]
 						set _userpath "$::env(LOCALAPPDATA)/tclfpdf/fonts" }
-			unix 		{ 	set _systemfonts [list "/usr/share/fonts" "/usr/local/share/fonts" "~/.fonts"]
+			unix 		{ 	set _systemfonts [list "/usr/share/fonts" "/usr/local/share/fonts" "$::env(HOME)/.fonts"]
 						set _userpath "$::env(HOME)/.local/share/tclfpdf/fonts" }
 			macintosh { 	set  _systemfonts [list "/System/Library/Fonts" "/Libray/Fonts"] 
 						set _userpath "$::env(HOME)/tclfpdf/fonts" }

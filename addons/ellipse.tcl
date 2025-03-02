@@ -16,6 +16,10 @@
 # ry: vertical radius.
 # style: style of rendering, like for Rect (D, F or FD). Default value: D. 
 
+namespace export \
+	Ellipse \
+	Circle;
+
 proc ::tclfpdf::Circle { x y r { style D } } {
     Ellipse  $x  $y $r $r $style;
 }
@@ -49,10 +53,4 @@ proc ::tclfpdf::Ellipse { x y rx ry { style D } } {
         [expr ($x+$rx)*$k] [expr ($h-($y+$ly))*$k] \
         [expr ($x+$rx)*$k] [expr ($h-$y)*$k] \
         $op];
-}
-
-namespace eval ::tclfpdf:: {
-	namespace export \
-	Ellipse \
-	Circle
 }

@@ -10,7 +10,7 @@ SetFont "DejaVu" "" 14
 Write 5 "To find out what's cool in this example, click "
 set link [AddLink]
 SetFont "DejaVu" "U" 14;
-Write 5 "Здравствулте мир" $link
+Write 5 "Þetta er hlekkur. Smelltu hér!" $link
 # Second page
 AddPage
 SetLink $link

@@ -20,6 +20,9 @@
 # 	txt_angle: angle of the text
 # 	font_angle: shear angle (0 by default)
 
+namespace export \
+	TextWithDirection \
+	TextWithRotation ;
 
 proc ::tclfpdf::TextWithDirection {x y txt {direction "R" }} {
     variable ColorFlag; variable k; variable h;variable TextColor;
@@ -58,10 +61,4 @@ proc ::tclfpdf::TextWithRotation {x y txt txt_angle {font_angle 0}} {
         set s  "q $TextColor $s Q";
    }	
     _out $s;
-}
-
-namespace eval ::tclfpdf:: {
-	namespace export \
-	TextWithDirection \
-	TextWithRotation
 }

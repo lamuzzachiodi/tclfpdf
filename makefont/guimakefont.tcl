@@ -1,5 +1,5 @@
 package require Tk
-source makefont.tcl
+source -encoding utf-8 makefont.tcl
 
 encoding system utf-8
 

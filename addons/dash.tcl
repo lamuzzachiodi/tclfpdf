@@ -7,18 +7,15 @@
 # 	white: length of gaps
 # Call the function without parameter to restore normal drawing.
 
+namespace export \
+SetDash;
+
 proc ::tclfpdf::SetDash { {black 0}  {white 0} } {
-    variable k;
-
-    if { $black } {
-            set s [ format "\[%.3f %.3f\] 0 d" [expr $black*$k] [expr $white*$k ]]
-	} else {
-            set s "\[\] 0 d";
-	}    
-        _out $s;
+	variable k;
+if { $black } {
+	set s [ format "\[%.3f %.3f\] 0 d" [expr $black*$k] [expr $white*$k ]]
+} else {
+	set s "\[\] 0 d";
+}    
+	_out $s;
 }
-
-namespace eval ::tclfpdf:: {
-	namespace export \
-	SetDash
-}	

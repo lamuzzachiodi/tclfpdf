@@ -199,9 +199,9 @@ proc utf8substr { str start {length "all"}} {
 		set c [scan  [string index $str [incr i]] %c]
 		set step 1;
 		if {($c & 0xc0) == 0xc0 } { #start of multibyte
-			if { ($c & 240) ==240 } {set step 4}
-			if { ($c & 224) ==224 } {set step 3}
 			if { ($c & 192) ==192 } {set step 2}
+			if { ($c & 224) ==224 } {set step 3}
+			if { ($c & 240) ==240 } {set step 4}
 		} 
 		incr charn;
 		set j [expr $i + $step-1 ];
@@ -237,10 +237,10 @@ proc utf8reverse { s } {
 		set c [scan  [string index $s [incr i]] %c]
 		if {($c & 0xc0) == 0xc0 } { #start of multibyte
 			set ret 0;
-			if { ($c & 240) ==240 } {set ret 4}
-			if { ($c & 224) ==224 } {set ret 3}
 			if { ($c & 192) ==192 } {set ret 2}
-			set f [expr $i-$ret];
+			if { ($c & 224) ==224 } {set ret 3}
+			if { ($c & 240) ==240 } {set ret 4}
+			set f [expr $i-$ret+1];
 			set s [string replace $s $f $i [string reverse [string range $s $f $i]]]
 		}
 	}	
@@ -320,5 +320,5 @@ proc random {min max} {
 }
 
 proc _procexists { p } {
-   return uplevel 1 [expr {[llength [info procs $p]] > 0}]
+   return [uplevel 1 expr [llength [info procs $p]] > 0]
 }

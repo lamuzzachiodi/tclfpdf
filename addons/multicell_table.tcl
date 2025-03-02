@@ -8,15 +8,22 @@
 #the MultiCells it is made up of. To know the height of a MultiCell, the NbLines() procedure is used: it returns the number
 #of lines a MultiCell will occupy.
 
+variable MCT_widths {};
+variable MCT_aligns  {};
 
-variable MCT_widths {}
-variable MCT_aligns  {}
+namespace export \
+	MCT_SetWidths \
+	MCT_SetAligns \
+	MCT_PrintRows \
+	MCT_Row \
+	MCT_CheckPageBreak \
+	MCT_NbLines ;
 
 proc ::tclfpdf::MCT_SetWidths { w } {
 	variable MCT_widths
 	#Set the array of column widths
         set MCT_widths $w
-   }
+}
 
 proc ::tclfpdf::MCT_SetAligns { a } {
 	variable MCT_aligns	
@@ -26,12 +33,11 @@ proc ::tclfpdf::MCT_SetAligns { a } {
 
 proc ::tclfpdf::MCT_PrintRows { nrows {fila {}} } {
 	variable MCT_widths
-	
 	if  {$MCT_widths eq {} } {
 		Error "No widths has been set"
 	}
 	if { $fila eq {} } {
-		if { [ _procexists MCT_SetColumns]  } {
+		if { [ _procexists MCT_SetColumns] } {
 			for { set i 0} { $i< $nrows } { incr i} {
 				set fila [MCT_SetColumns]
 				if   { [llength $MCT_widths] != [llength $fila] }  { Error "Numbers of widths <> numbers of columns" };
@@ -49,12 +55,12 @@ proc ::tclfpdf::MCT_PrintRows { nrows {fila {}} } {
 }	
 
 proc ::tclfpdf::MCT_Row { data } {
-	variable MCT_widths MCT_aligns
+	variable MCT_widths ; variable MCT_aligns ;
 	
         # Calculate the height of the row
         set nb 0
         for {set i 0} { $i <  [llength $data] } { incr i } {
-		set NB [MCT_NbLines [lindex $MCT_widths $i] [lindex $data $i]] 
+		set NB [ MCT_NbLines [lindex $MCT_widths $i] [lindex $data $i] ]  
 		if {$nb < $NB} {
 			set nb $NB
 		}	
@@ -65,15 +71,17 @@ proc ::tclfpdf::MCT_Row { data } {
         # Draw the cells of the row
         for {set i 0} { $i< [llength $data] } {incr i} {
             set w1 [lindex $MCT_widths $i]
-	    set a [lindex MCT_aligns $i ]
-            if {$a eq ""} { set a "L" }
+	    set a [lindex $MCT_aligns $i ]
+	    if {$a == {} } {
+		set a "L"
+	    }
             # Save the current position
             set x1 [GetX]
             set y1 [GetY]
             # Draw the border
             Rect $x1 $y1 $w1 $h1
             # Print the text
-            MultiCell $w1 5 [lindex $data $i ] 0 $a;
+            MultiCell $w1 5 [lindex $data $i ] 0 $a 0;
             # Put the position to the right of the cell
             SetXY [expr $x1+$w1] $y1
         }
@@ -159,14 +167,4 @@ proc  ::tclfpdf::MCT_NbLines { w1 txt } {
 	    } 	
         }
         return $nl
-}
-
-namespace eval ::tclfpdf:: {
-	namespace export \
-	MCT_SetWidths \
-	MCT_SetAligns \
-	MCT_PrintRows \
-	MCT_Row \
-	MCT_CheckPageBreak \
-	MCT_NbLines \
 }
