@@ -19,6 +19,7 @@ wm resizable . 0 0
 # toplevel for search fonts
 set w .treew
 toplevel $w
+wm geometry $w 400x300
 wm title $w "Directory Browser"
 wm iconname $w "tree"
 wm resizable $w 0 0
@@ -115,12 +116,16 @@ wm withdraw $w
 	grid .t.bexit -row 0 -column 3 -sticky nw -pady 5 -padx 5
 	pack .t
 
-
 proc help { } {
 	switch -- $::tcl_platform(platform) {
 		windows 	{  set command [ list {*}[auto_execok start] {} ]}
-		unix 		{  set command  [ auto_execok xdg-open ]  }
-		macintosh {  set command  [ auto_execok open ]  }
+		unix 		{
+					if { $::tcl_platform(os) eq "Darwin" } {
+						set command  [ auto_execok open ]
+					} else {			
+						set command  [ auto_execok xdg-open ]
+					}
+				}
 		default 	{  ::makefont::Error "The platform: $::tc_platform(platform) isn't defined."; focus -force .f.efil  }
 	}
 	if {[catch {exec {*}$command  "../manual/makefont.html"  } err]} {
@@ -171,7 +176,7 @@ proc OpenDirUser {} {
 
 proc about {} {
 
-	tk_messageBox -parent . -title "About this..." -message "Makefont wrapper 1.0 (2025) \n \
+	tk_messageBox -parent . -title "About this..." -message "Makefont wrapper 1.1 (2025) \n \
 	A simple gui of makefont utility \n \
 	for generate new definitions files \n \
 	to be used in TCLFPDF. \n \
@@ -234,7 +239,6 @@ proc populateRoots {tree} {
 
 ## Code to populate a node of the tree
 proc populateTree {tree node} {
-
     if {[$tree set $node type] ne "directory"} {
 	return
     }
@@ -333,13 +337,12 @@ grid $w.tree $w.vsb -sticky nsew -in $w.dummy
 grid $w.hsb -sticky nsew -in $w.dummy
 grid columnconfigure $w.dummy 0 -weight 1
 grid rowconfigure $w.dummy 0 -weight 
-ttk::button $w.sel  -text Select -width 10 -command _selectTree
-ttk::button  $w.esc -text Cancel -width 10 -command Close_findfonts
+ttk::button $w.sel  -text Select  -width 5 -command _selectTree
+ttk::button  $w.esc -text Cancel -width 5 -command Close_findfonts
 pack $w.sel $w.esc -side left -expand 1 -fill both -padx 5 -pady 5	
 
 
 #------------------------------------------------------------------------------------------
 # Lets begin ...
 
-	::makefont::SetExitOnError 0
 	focus -force .f.fo.efil

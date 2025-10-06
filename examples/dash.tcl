@@ -1,8 +1,6 @@
 package require tclfpdf
 namespace import  ::tclfpdf::*
 
-
-Init;
 AddPage;
 SetLineWidth 0.1;
 SetDash 5 5; #5mm on, 5mm off

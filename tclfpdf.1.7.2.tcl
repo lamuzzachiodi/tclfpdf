@@ -1,6 +1,6 @@
 ;# *******************************************************************************
 ;# tclfpdf.tcl 
-;# Version: 1.7.1 (2025)
+;# Version: 1.7.2 (2025)
 ;# Ported to TCL by L. A. Muzzachiodi
 ;# Credits:
 ;# Based on tFPDF 1.33 by Ian Back <ianb@bpm1.com>
@@ -11,12 +11,12 @@
 ;# Note: 
 ;# the definition of core fonts have a diference: the uv index in FPDF, not tfpdf, cause a bigger file (?)
 
-set version 1.7.1
-package provide tclfpdf $version
+set _version 1.7.2
+set _isInit 1
+package provide tclfpdf $_version
 package require Tk
 namespace eval ::tclfpdf:: {
 	namespace export \
-		        Init \
 		        SetMargins \
 		        SetLeftMargin \
 		        SetTopMargin \
@@ -63,15 +63,17 @@ namespace eval ::tclfpdf:: {
 		        SetY \
 		        SetXY \
 		        Output \
-			ShowMoreInfoError  \
-			SetSystemFonts \
+			SetUnits \
+			SetPageSize \
+			SetPageOrientation \
+			SetSystemFontsPaths \
 			SetUserPath;
-	;# ShowMoreInfoError , SetSystemFonts and SetUserPath only in TCLFPDF
+	;# SetUnits, SetPageSize and SetPageOrientation, SetSystemFontsPaths and SetUserPath only in TCLFPDF
 
-	;#These will be set at the end
+	;#These will be set in _Init
 	variable TCLFPDF_USERPATH			;# path of writeable folder for cache
-	variable TCLFPDF_COREFONTPATH 		;# path of core fonts definitions and ttfont source
-	variable TCLFPDF_SYSTEMFONTPATH		;# list of path for load fonts
+	variable TCLFPDF_COREFONTSPATH 		;# path of core fonts definitions and ttfont source
+	variable TCLFPDF_SYSTEMFONTSPATHS	;# list of path for load fonts
 
 	variable VERSION 			;#
 	variable unifontSubset		;#
@@ -136,11 +138,10 @@ namespace eval ::tclfpdf:: {
 	variable Spaces4Tab			;#How spaces are a Tab ?
 	variable TAB				;# Constant with spaces according Space4Tab
 	
-	variable TraceAfterError		;#Show more info after error
-	
-proc ::tclfpdf::Init { { orientation P } { unit mm } { size A4 } } {
-	global version
-	variable w; variable h; variable StdPageSizes;
+proc ::tclfpdf::_Init {} {
+	global _version _isInit
+	variable w;
+	variable h;
 	;# Initialization of properties 
 	variable state 0;
 	variable page 0;
@@ -174,41 +175,16 @@ proc ::tclfpdf::Init { { orientation P } { unit mm } { size A4 } } {
 	variable y -1; # Idem
 	;# Core fonts
 	variable CoreFonts [list courier helvetica times symbol zapfdingbats];
-	;# Scale factor
-	variable k; 
-	if {$unit == "pt"} {
-		set k 1;
-	} elseif {$unit=="mm"} {
-		set k  [expr 72/25.4];
-	} elseif {$unit=="cm"} {
-		set k  [expr 72/2.54];
-	} elseif {$unit=="in"} {
-		set k  72;
-	} else {
-		Error "Incorrect unit: $unit";
-	}        
-	;# Page sizes
-	array set StdPageSizes { a3 {841.89 1190.55 }  a4 {595.28 841.89} a5 {420.94 595.28} letter {612 792} legal {612 1008} };
-	set size [ _getpagesize $size];
-	variable DefPageSize  $size;
-	variable CurPageSize  $size;
+	;# Units
+	variable k;
+	SetUnit;
 	;# Page orientation
-	variable DefOrientation;
-	set orientation [ string tolower $orientation];
-	if {$orientation=="p" || $orientation=="portrait"} {
-		set DefOrientation  "P";
-		set w  [lindex $size 0];
-		set h  [lindex  $size 1];
-	} elseif {$orientation=="l" || $orientation=="landscape"} {
-		set DefOrientation  "L";
-		set w  [lindex $size 1] ;
-		set h  [lindex $size 0];
-	} else {
-		Error "Incorrect orientation: $orientation";
-	}        
-	variable CurOrientation  $DefOrientation;
-	variable wPt  [expr $w*$k];
-	variable hPt   [expr $h*$k];
+	variable DefOrientation "p"
+	;# Page sizes
+	variable StdPageSizes;
+	array set StdPageSizes { a3 {841.89 1190.55 }  a4 {595.28 841.89} a5 {420.94 595.28} letter {612 792} legal {612 1008} };
+	SetPageSize;
+	;#SetPageOrientation is not necessary because SetPageSize make that
 	;#Page rotation
 	variable CurRotation 0;
 	;# Page margins (1 cm)
@@ -225,7 +201,7 @@ proc ::tclfpdf::Init { { orientation P } { unit mm } { size A4 } } {
 	;# Enable compression
 	SetCompression 1;
 	;#Version TCLFPDF
-	variable VERSION $version;
+	variable VERSION $_version;
 	;#Metadata
 	variable metadata; 
 	array set metadata [list Producer "TCLFPDF $VERSION"];
@@ -247,10 +223,94 @@ proc ::tclfpdf::Init { { orientation P } { unit mm } { size A4 } } {
 	variable unifontSubset 0;
 	variable AliasNbPages "";
 	
-	;#Set action after Fatal Error, default is just exit 
-	variable TraceAfterError 0;
+	set dirscript [file dirname [info script]];
+
+	;# Import utilities
+	source -encoding utf-8 [file join $dirscript/misc/util.tcl];
 	
+	;#Import addons
+	foreach addon [glob [file join $dirscript/addons/*.tcl]] {
+		source -encoding utf-8 $addon;
+	}
+
+	;# Script fonts path
+	variable TCLFPDF_COREFONTSPATH [file join "$dirscript/font"]; # path of TCLFPDF + font
+	variable TCLFPDF_SYSTEMFONTSPATHS {} ;
+	variable TCLFPDF_USERPATH {};
+	
+	;#Setting system and user fonts path
+	switch -- $::tcl_platform(platform) {
+			windows 	{ 	
+						set _systemfonts [list "$::env(SystemRoot)/fonts"];
+						set _userpath "$::env(LOCALAPPDATA)/tclfpdf";
+					}
+			unix 		{
+						if { $::tcl_platform(os) eq "Darwin" } {
+							set  _systemfonts [list "/System/Library/Fonts" "/Libray/Fonts"];
+							set _userpath "$::env(HOME)/tclfpdf";
+						} else {			
+							set _systemfonts [list "/usr/share/fonts" "/usr/local/share/fonts" "$::env(HOME)/.fonts"];
+							set _userpath "$::env(HOME)/.local/share/tclfpdf";
+						}	
+					}
+	}
+	SetUserPath $_userpath;
+	SetSystemFontsPaths $_systemfonts;
+	set _isInit 0;
 }
+
+# Add in TCLFPDF .... ---------------------------------------------------------------
+proc ::tclfpdf::SetUnit { { unit mm}  } {
+	;# Scale factor
+	variable k; 
+	set unit [ string tolower $unit];
+	if {$unit == "pt"} {
+		set k 1;
+	} elseif {$unit=="mm"} {
+		set k  [expr 72/25.4];
+	} elseif {$unit=="cm"} {
+		set k  [expr 72/2.54];
+	} elseif {$unit=="in"} {
+		set k  72;
+	} else {
+		Error "Incorrect unit: $unit";
+	}
+}
+
+proc ::tclfpdf::SetPageSize { { size a4} } {
+	set size [ string tolower $size];
+	set size [ _getpagesize $size];
+	variable DefPageSize  $size;
+	variable CurPageSize  $size;
+	variable DefOrientation;
+	SetPageOrientation $DefOrientation;
+}
+
+proc ::tclfpdf::SetPageOrientation { {orientation p}} {
+	variable DefOrientation;
+	variable DefPageSize
+	variable k;
+	variable w;
+	variable h;
+	set size [ _getpagesize $DefPageSize];
+	set orientation [ string tolower $orientation];
+	if {$orientation=="p" || $orientation=="portrait"} {
+		set DefOrientation  "P";
+		set w  [lindex $size 0];
+		set h  [lindex  $size 1];
+	} elseif {$orientation=="l" || $orientation=="landscape"} {
+		set DefOrientation  "L";
+		set w  [lindex $size 1] ;
+		set h  [lindex $size 0];
+	} else {
+		Error "Incorrect orientation: $orientation";
+	}        
+	variable CurOrientation $DefOrientation;
+	variable wPt  [expr $w*$k];
+	variable hPt   [expr $h*$k];
+}
+
+# --------------------------------------------------------------------------------------
 
 proc ::tclfpdf::SetMargins { left top {right ""} } {
 	variable lMargin; variable tMargin; variable rMargin; 
@@ -350,26 +410,9 @@ proc ::tclfpdf::AliasNbPages { {alias "%nb%"} } {
 }
 
 proc ::tclfpdf::Error { msg } {
-	;# Fatal error	
-	variable TraceAfterError;
-	set mode "std"; 
-	;#Disable if necessary and set mode according
-	if {[string match *wish* [file tail [info nameofexecutable] ]]}  {
-		set mode "gui";
-	}
-	switch -- $mode {
-		gui {			
-		        tk_messageBox -icon error -message $msg -title "TCLFPDF error";
-		}
-		std  {
-		        puts "TCLFPDF error: $msg";
-		}
-	}
-	if { [info exists ::tclfpdf::TraceAfterError] ==0  || $TraceAfterError == 0 } {
-		exit
-	} else {
-		return -code error $msg
-	}	
+	global _isInit
+	if {$_isInit } return;
+	return -code error "TCLFPDF error: $msg";
 }
 
 proc ::tclfpdf::Close { } {
@@ -596,7 +639,7 @@ proc ::tclfpdf::Rect { x1 y1 w1 h1 {style "" } } {
 }
 
 proc ::tclfpdf::AddFont { family {style ""} {file ""} {uni 0}} {
-	variable fonts; variable FontFiles; variable AliasNbPages; variable TCLFPDF_USERPATH; variable TCLFPDF_COREFONTPATH;
+	variable fonts; variable FontFiles; variable AliasNbPages; variable TCLFPDF_USERPATH; variable TCLFPDF_COREFONTSPATH;
 	;# Add a TrueType, OpenType or Type1 font
 	set family [string tolower $family];
 	set style [string toupper $style];
@@ -638,7 +681,7 @@ proc ::tclfpdf::AddFont { family {style ""} {file ""} {uni 0}} {
 		}
 		if {! [isset type] ||  ![isset name] || $originalsize != $ttfstat(size)} {
 			set ttffile $ttffilename;
-			source -encoding utf-8 "$TCLFPDF_COREFONTPATH/ttf_font.tcl";
+			source -encoding utf-8 "$TCLFPDF_COREFONTSPATH/ttf_font.tcl";
 			ttf_Init;
 			ttf_getMetrics $ttffile;
 			set long [array size ttf_charWidths];
@@ -1350,27 +1393,26 @@ proc ::tclfpdf::SetXY { x1 y1 } {
 
 }
 
-proc ::tclfpdf::Output { {name "" } { dest "" } } {
-	variable state; variable buffer;
+proc ::tclfpdf::Output { {name "doc.pdf" } { dest "f" } } {
+	variable state; variable page;
+	variable buffer;
+	variable TCLFPDF_USERPATH;
 	;# Output PDF to some destination
 	Close;
-	set dest  [string toupper $dest];
-	if {$dest==""}	{
-		if {$name==""} {
-			set name "doc.pdf";
-		}	
-	        set dest  "F";
-	}
+	set dest  [string tolower $dest];
 	switch $dest {
-		"F"	{
+		"f"	{
 			;# Save to local file
+			if { [file writable [file dirname [info script]] ]== 0  } {
+				set name [file join $TCLFPDF_USERPATH $name]
+			} 
 		        if { [catch {open $name "wb"} f] } {
 				Error "Can't save file $name"
 			};
 		        puts -nonewline $f $buffer;
 		        close $f ;
 			}
-		"S"
+		"s"
 			{
 		        ;# Return as a string
 		        return $buffer;
@@ -1380,7 +1422,9 @@ proc ::tclfpdf::Output { {name "" } { dest "" } } {
 		        Error "Incorrect output destination: $dest";
 			}
 	}
-	return "";
+	;# Mimic Init (reset) : zero state
+	set page 0;
+	set state 0;
 }
 
 proc ::tclfpdf::_getpagesize {size} {
@@ -1908,7 +1952,7 @@ proc ::tclfpdf::_putpages { } {
 
 proc ::tclfpdf::_putfonts { } {
 	variable n; variable diffs;variable FontFiles; variable fonts; 
-	variable TCLFPDF_COREFONTPATH; variable CurrentFont;
+	variable TCLFPDF_COREFONTSPATH; variable CurrentFont;
 
 	foreach  {file info0} [array get FontFiles]  {
 		array set _info $info0 ;
@@ -2035,7 +2079,7 @@ proc ::tclfpdf::_putfonts { } {
 		} elseif {$type=="TTF"} {
 			;# TrueType embedded SUBSETS or FULL
 			set fonts($k1) "$fonts($k1) n [expr $n+1]";
-			source -encoding utf-8 "$TCLFPDF_COREFONTPATH/ttf_font.tcl";
+			source -encoding utf-8 "$TCLFPDF_COREFONTSPATH/ttf_font.tcl";
 			ttf_Init;
 			set fontname  "MPDFAA+$font11(name)";
 			set subset $font11(subset);
@@ -2562,58 +2606,61 @@ proc ::tclfpdf::_UTF8StringToArray { str } {
 	return $out;
 }
 
-proc ::tclfpdf::ShowMoreInfoError { {bool 1}} {
+proc ::tclfpdf::SetSystemFontsPaths { listofpaths } {
 
-	variable TraceAfterError;
-	switch -- $bool  {
-		0   { set TraceAfterError  0 }
-		1   { set TraceAfterError 1 }
-		default { Error "Parameter no valid calling ShowMoreInfoError" }
-	}
-}
+	variable TCLFPDF_SYSTEMFONTSPATHS;
+	global _isInit;
 
-proc ::tclfpdf::SetSystemFonts { listofpaths } {
-
-	variable TCLFPDF_SYSTEMFONTPATH;
 	;#to check existence of directory
 	foreach p $listofpaths {
+		set p [ file normalize $p ];
 		if { [file isdirectory $p ]== 1 } {
-			lappend TCLFPDF_SYSTEMFONTPATH [ file normalize $p ];
-		} else {
-			Error "Path not valid setting System Fonts: $p";
+			lappend TCLFPDF_SYSTEMFONTSPATHS $p;
 		}
+	}
+	;# even if TCLFPDF_SYSTEMFONTSPATHS was empty, still the font could be exist in other path ,
+	;#so the script keep running in the init, however if was setted after then throw error
+	if { $TCLFPDF_SYSTEMFONTSPATHS eq  {} && $_isInit == 0 } {
+			Error "Path not valid setting System Fonts: $p";
 	}
 }
 
 proc ::tclfpdf::SetUserPath { path } {
 
 	variable TCLFPDF_USERPATH;
+
+	set path [ file normalize $path ];
 	;#to check existence of directory
-	if {[file exists $path ] ==1 } {
-		if { [file writable $path ]== 1  } {
-			set TCLFPDF_USERPATH [ file normalize $path ];
+	;# Path exist
+	if {[file exist $path]==1} {
+		if {[file isdirectory $path ] ==1 } {
+			if { [file writable $path ]== 1  } {
+				set TCLFPDF_USERPATH $path;
+			} else {
+				Error "Folder isn't writable, setting User Path: $path";
+			}
 		} else {
-			Error "Folder isn't writable, setting User Path: $path";
+				Error "Path is not a folder(is a File),\n setting User Path: $path";
 		}
 	} else {
 	;# folder doesn't exist
-		if { [catch [file mkdir [file normalize $path]] err]} {
+		if { [catch [file mkdir $path] err]} {
 			Error "Can't create folder $path : $err";
 		} else {
-			set TCLFPDF_USERPATH [ file normalize $path ];		
+			set TCLFPDF_USERPATH $path;
 		}
 	}
 }
 
 proc ::tclfpdf::_SearchPathFile { file } {
 
-	variable TCLFPDF_SYSTEMFONTPATH;
-	variable TCLFPDF_COREFONTPATH;
+	variable TCLFPDF_SYSTEMFONTSPATHS;
+	variable TCLFPDF_COREFONTSPATH;
 	variable TCLFPDF_USERPATH;
 	
-	set declaredpaths $TCLFPDF_SYSTEMFONTPATH
-	lappend  declaredpaths $TCLFPDF_COREFONTPATH
-	lappend  declaredpaths $TCLFPDF_USERPATH
+	set declaredpaths $TCLFPDF_SYSTEMFONTSPATHS;
+	lappend  declaredpaths $TCLFPDF_COREFONTSPATH;
+	lappend  declaredpaths $TCLFPDF_USERPATH;
 
 	foreach p $declaredpaths {
 		if { [file exists "$p/$file"]} {
@@ -2623,30 +2670,7 @@ proc ::tclfpdf::_SearchPathFile { file } {
 	Error "Could not find file font $file"
 }
 
-	;# Import utilities
-	source -encoding utf-8 [file join [file dirname [info script]]/misc/util.tcl]
-	
-	;#Import addons
-	foreach addon [glob [file join [file dirname [info script]]/addons/*.tcl]] {
-		source -encoding utf-8 $addon
-	}
-
-	;# Script fonts path
-	variable TCLFPDF_COREFONTPATH [file normalize "[file dirname [info script]]/font"]; # path of TCLPDF + font
-	;#Setting system and user fonts path
-	switch -- $::tcl_platform(platform) {
-			windows 	{ 	set _systemfonts [list "$::env(SystemRoot)/fonts"] 
-						set	_userpath "$::env(LOCALAPPDATA)/tclfpdf/fonts"
-					}
-			unix 		{ 	set _systemfonts [list "/usr/share/fonts" "/usr/local/share/fonts" "$::env(HOME)/.fonts"]
-						set _userpath "$::env(HOME)/.local/share/tclfpdf/fonts"
-					}
-			macintosh { 	set  _systemfonts [list "/System/Library/Fonts" "/Libray/Fonts"] 
-						set _userpath "$::env(HOME)/tclfpdf/fonts"
-					} 
-			default { Error "Missing system path font.\n The platform: $::tcl_platform(platform) isn't defined."}
-	}	
-	SetSystemFonts $_systemfonts;
-	SetUserPath $_userpath;
+	;# Now initialize all
+	_Init;
 
 } ;# END eval namespace TCLFPDF

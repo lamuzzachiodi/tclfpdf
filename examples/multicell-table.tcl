@@ -9,7 +9,6 @@ proc ::tclfpdf::MCT_SetColumns {} {
 	return [list "i'm justified aligned \n $col1" "i'm rigth aligned \n $col1" "i'm left aligned \n $col1" "i'm centered\n $col1" "i'm default align\n $col2" ]
 }
 
-Init;
 AddPage L ;
 AddFont "DejaVu" "" "DejaVuSansCondensed.ttf" 1;
 SetFont "DejaVu" "" 12;

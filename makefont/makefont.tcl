@@ -1,6 +1,6 @@
 ;# *******************************************************************************
 ;# * Utility to generate font definition files
-;#    Version 1.3.3 (2025)
+;#    Version 1.3.4 (2025)
 ;# * Ported to TCL by L.A. Muzzachiodi
 ;# * Credit:
 ;#  	Version: 1.31 (2019) by  Olivier PLATHEY
@@ -12,7 +12,6 @@ namespace eval ::makefont:: {
 variable MF_USERPATH {}; # path of writable folder for save new definitions
 variable MF_PATH [file normalize [file dirname [info script]]];#path of Makefont
 variable MF_FONTS [list [file normalize [file join $MF_PATH "../fonts"]]];
-variable ExitOnError 1;# halt when error occurs ?
 
 source -encoding utf-8 "../misc/util.tcl";
 source -encoding utf-8 ttfparser.tcl;
@@ -33,23 +32,14 @@ proc  Message { txt {severity ""} } {
 	}
 }
 
-proc  Notice { txt } {
-	Message  $txt "Notice:";
-}
-
 proc  Warning { txt } {
 	Message $txt  "Warning:" ;
 }
 
 proc  Error { txt } {
 
-	variable ExitOnError
 	Message $txt "Error:";
-	if { $ExitOnError == 1} {
-		exit;
-	 } else {
-		return -code error $txt
-	 }
+	return -code error $txt
 }
 
 proc  LoadMap { enc } {
@@ -480,32 +470,28 @@ proc MakeFont {fontfile {enc "cp1252"} {embed 1}  {subset 1}} {
 	Message "Font definition file generated: $basename.tcl";
 }
 
-proc SetExitOnError { { bool 1} } {
-
-	variable ExitOnError
-	switch -- $bool  {
-		0   { set ExitOnError  0 }
-		1   { set ExitOnError 1 }
-		default { Error "Parameter no valid calling SetExitOnError" }
-	}
-}
-
 proc SetUserPath { path } {
 
 	variable  MF_USERPATH;
-	#to check existence of directory
+	#to check existence of path
+	# path exists
+	set path [ file normalize $path ];
 	if {[file exists $path ] ==1 } {
-		if { [file writable $path ]== 1  } {
-			set  MF_USERPATH [ file normalize $path ];
+		if {[file isdirectory $path ] ==1 } {
+			if { [file writable $path ]== 1  } {
+				set MF_USERPATH $path;
+			} else {
+				Error "Folder isn't writable, setting User Path: $path";
+			}
 		} else {
-			Error "Folder isn't writable, setting User Path: $path";
+				Error "Path is not a folder(is a File),\n setting User Path: $path";
 		}
 	} else {
-	# folder doesn't exist
-		if { [catch [file mkdir [file normalize $path]] err]} {
+	# folder doesn't exists
+		if { [catch [file mkdir $path] err]} {
 			Error "Can't create folder $path : $err";
 		} else {
-			set MF_USERPATH [ file normalize $path ];		
+			set MF_USERPATH $path;		
 		}
 	}
 }
@@ -514,27 +500,30 @@ proc CheckFile { file desc } {
 
 	if {$file eq {} } {
 		Error "$desc couldn't be empty"
-		return 0
 	}
 	if { ![file exist $file]} {
 		Error "Could not find $desc\n $file"
-		return 0
 	}
 	if { ![file isfile $file]} {
 		Error "$desc must be a file"
-		return 0
 	}
 }
 
 # set default value of user and fonts path
 	switch -- $::tcl_platform(platform) {
-			windows 	{	set _systemfonts [list "$::env(SystemRoot)/fonts"]
-						set _userpath "$::env(LOCALAPPDATA)/tclfpdf/fonts" }
-			unix 		{ 	set _systemfonts [list "/usr/share/fonts" "/usr/local/share/fonts" "$::env(HOME)/.fonts"]
-						set _userpath "$::env(HOME)/.local/share/tclfpdf/fonts" }
-			macintosh { 	set  _systemfonts [list "/System/Library/Fonts" "/Libray/Fonts"] 
-						set _userpath "$::env(HOME)/tclfpdf/fonts" }
-			default { Error "Missing system path font.\n The platform: $::tcl_platform(platform) isn't defined."}
+			windows 	{	
+						set _systemfonts [list "$::env(SystemRoot)/fonts"];
+						set _userpath "$::env(LOCALAPPDATA)/tclfpdf" ;
+					}
+			unix 		{
+						if { $::tcl_platform(os) eq "Darwin" } {
+							set  _systemfonts [list "/System/Library/Fonts" "/Libray/Fonts"];
+							set _userpath "$::env(HOME)/tclfpdf";
+						} else {			
+							set _systemfonts [list "/usr/share/fonts" "/usr/local/share/fonts" "$::env(HOME)/.fonts"];
+							set _userpath "$::env(HOME)/.local/share/tclfpdf";
+						}
+					}
 	}
 	foreach p $_systemfonts {
 		if { [file isdirectory $p ]== 1 } {

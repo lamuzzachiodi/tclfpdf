@@ -104,7 +104,6 @@ set html "You can now easily print text mixing different styles: <b>bold</b>, <i
 text, such as <a href=\"http://www.fpdf.org\">www.fpdf.org</a>, or on an image: click on the logo."
 
 # First page
-Init
 AddPage
 SetFont "Arial" "" 20
 Write 5 "To find out what's cool in this example, click "

@@ -1,4 +1,4 @@
-# **TCLFPDF 1.7.1 (2025)** #
+# **TCLFPDF 1.7.2 (2025)** #
 ## *Port of tFPDF (PHP) by  by Ian Back and Tycho Veltmeijer (modified version of FPDF by Olivier Plathey) to TCL* ##
 
 ----------
@@ -21,7 +21,7 @@ He tratado de ser lo más fiel posible al original en PHP, manteniendo los nombr
 
 Sus comentarios o sugerencias serán bienvenidos.
 
-__*Luis Alejandro Muzzachiodi (2023)*__
+__*Luis Alejandro Muzzachiodi (2025)*__
 
 
 ----------
@@ -32,9 +32,9 @@ __*Luis Alejandro Muzzachiodi (2023)*__
 * Improved error handling.
 * Added a gui for use with makefont script.
 * Added a addon to generate a multi-line cell.
+* Added information about licenses
+* The procedure **Init** became obsolete since 1.7.2
 
 Thank to everyone who contributed with suggestions or bug reports.
 
 ----------
-### Notes ###
-- TCLFPDF uses the *procedure* **Init** where FPDF uses the *class constructor* **FPDF** (the parameters are the same).

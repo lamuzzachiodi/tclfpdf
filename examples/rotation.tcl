@@ -1,7 +1,6 @@
 package require tclfpdf
 namespace import  ::tclfpdf::*
 
-Init;
 AddPage;
 SetFont "Arial" "" 40;
 TextWithRotation 50 65 "Hello" 45 -45;

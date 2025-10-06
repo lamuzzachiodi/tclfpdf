@@ -1,7 +1,6 @@
 package require tclfpdf
 namespace import  ::tclfpdf::*
 
-Init;
 AddPage;
 # Add a Unicode font (uses UTF-8)
 AddFont "DejaVu" "" "DejaVuSansCondensed.ttf" 1;
