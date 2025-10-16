@@ -1,6 +1,6 @@
 ;# *******************************************************************************
 ;# tclfpdf.tcl 
-;# Version: 1.7.2 (2025)
+;# Version: 1.7.3 (2025)
 ;# Ported to TCL by L. A. Muzzachiodi
 ;# Credits:
 ;# Based on tFPDF 1.33 by Ian Back <ianb@bpm1.com>
@@ -11,58 +11,58 @@
 ;# Note: 
 ;# the definition of core fonts have a diference: the uv index in FPDF, not tfpdf, cause a bigger file (?)
 
-set _version 1.7.2
+set _version 1.7.3
 set _isInit 1
 package provide tclfpdf $_version
 package require Tk
 namespace eval ::tclfpdf:: {
 	namespace export \
-		        SetMargins \
-		        SetLeftMargin \
-		        SetTopMargin \
-		        SetRightMargin \
-		        SetAutoPageBreak \
-		        SetDisplayMode \
-		        SetCompression \
-		        SetTitle \
-		        SetSubject \
-		        SetAuthor \
-		        SetKeywords \
-		        SetCreator \
-		        AliasNbPages \
-		        Error \
-		        Open \
-		        Close \
-		        AddPage \
-		        Header \
-		        Footer \
-		        PageNo \
-		        SetDrawColor \
-		        SetFillColor \
-		        SetTextColor \
-		        GetStringWidth \
-		        SetLineWidth \
-		        Line \
-		        Rect \
-		        AddFont \
-		        SetFont \
-		        SetFontSize \
-		        AddLink \
-		        SetLink \
-		        Link \
-		        Text \
-		        AcceptPageBreak \
-		        Cell \
-		        MultiCell \
-		        Write \
-		        Ln \
-		        Image \
-		        GetX \
-		        SetX \
-		        GetY \
-		        SetY \
-		        SetXY \
-		        Output \
+			SetMargins \
+			SetLeftMargin \
+			SetTopMargin \
+			SetRightMargin \
+			SetAutoPageBreak \
+			SetDisplayMode \
+			SetCompression \
+			SetTitle \
+			SetSubject \
+			SetAuthor \
+			SetKeywords \
+			SetCreator \
+			AliasNbPages \
+			Error \
+			Open \
+			Close \
+			AddPage \
+			Header \
+			Footer \
+			PageNo \
+			SetDrawColor \
+			SetFillColor \
+			SetTextColor \
+			GetStringWidth \
+			SetLineWidth \
+			Line \
+			Rect \
+			AddFont \
+			SetFont \
+			SetFontSize \
+			AddLink \
+			SetLink \
+			Link \
+			Text \
+			AcceptPageBreak \
+			Cell \
+			MultiCell \
+			Write \
+			Ln \
+			Image \
+			GetX \
+			SetX \
+			GetY \
+			SetY \
+			SetXY \
+			Output \
 			SetUnits \
 			SetPageSize \
 			SetPageOrientation \
@@ -77,71 +77,71 @@ namespace eval ::tclfpdf:: {
 
 	variable VERSION 			;#
 	variable unifontSubset		;#
-	variable page                      	;# current page number
-	variable n                           	;# current object number
-	variable offsets                   	;# array of object offsets
-	variable buffer                    	;# buffer holding in-memory PDF
-	variable pages                    	;# array containing pages
-	variable state                     	;# current document state
-	variable compress              	;# compression flag
-	variable k                          	;# scale factor (number of points in user unit)
-	variable DefOrientation       	;# default orientation
-	variable CurOrientation       	;# current orientation
-	variable StdPageSizes         	;# standard page sizes
-	variable DefPageSize           	;# default page size
-	variable CurPageSize           	;# current page size
+	variable page				;# current page number
+	variable n				;# current object number
+	variable offsets				;# array of object offsets
+	variable buffer				;# buffer holding in-memory PDF
+	variable pages				;# array containing pages
+	variable state				;# current document state
+	variable compress			;# compression flag
+	variable k				;# scale factor (number of points in user unit)
+	variable DefOrientation		;# default orientation
+	variable CurOrientation		;# current orientation
+	variable StdPageSizes		;# standard page sizes
+	variable DefPageSize		;# default page size
+	variable CurPageSize 		;# current page size
 	variable CurRotation			;#current page rotation
 	variable PageInfo			;#page-related data
 	variable wPt 
-	variable hPt                       	;# dimensions of current page in points
+	variable hPt				;# dimensions of current page in points
 	variable w 
-	variable h                        	;# dimensions of current page in user unit
-	variable lMargin                	;# left margin
-	variable tMargin                	;# top margin
-	variable rMargin                	;# right margin
-	variable bMargin                     	;# page break margin
-	variable cMargin                    	;# cell margin
+	variable h				;# dimensions of current page in user unit
+	variable lMargin			;# left margin
+	variable tMargin			;# top margin
+	variable rMargin			;# right margin
+	variable bMargin			;# page break margin
+	variable cMargin		;# cell margin
 	variable x
-	variable y                         	;# current position in user unit
-	variable lasth                        	;# height of last printed cell
-	variable LineWidth                  	;# line width in user unit
-	variable CoreFonts                  	;# array of core font names
-	variable fonts                         	;# array of used fonts
-	variable FontFiles                    	;# array of font files
+	variable y				;# current position in user unit
+	variable lasth				;# height of last printed cell
+	variable LineWidth			;# line width in user unit
+	variable CoreFonts 			;# array of core font names
+	variable fonts				;# array of used fonts
+	variable FontFiles			;# array of font files
 	variable encodings			;#array of encodings
 	variable cmaps				;#array of ToUnicode CMaps
-	variable FontFamily                 	;# current font family
-	variable FontStyle                   	;# current font style
-	variable underline                    	;# underlining flag
-	variable CurrentFont               	;# current font info
-	variable FontSizePt           	;# current font size in points
-	variable FontSize                      ;# current font size in user unit
-	variable DrawColor                 	;# commands for drawing color
-	variable FillColor                	;# commands for filling color
-	variable TextColor                	;# commands for text color
-	variable ColorFlag                	;# indicates whether fill and text colors are different
+	variable FontFamily			;# current font family
+	variable FontStyle			;# current font style
+	variable underline			;# underlining flag
+	variable CurrentFont			;# current font info
+	variable FontSizePt			;# current font size in points
+	variable FontSize			;# current font size in user unit
+	variable DrawColor			;# commands for drawing color
+	variable FillColor			;# commands for filling color
+	variable TextColor			;# commands for text color
+	variable ColorFlag			;# indicates whether fill and text colors are different
 	variable WithAlpha			;# indicates whether alpha channel is used
-	variable ws                        	;# word spacing
-	variable images                	;# array of used images
-	variable PageLinks                  	;# array of links in pages
-	variable links                        	;# array of internal links
-	variable AutoPageBreak        	;# automatic page breaking
-	variable PageBreakTrigger        	;# threshold used to trigger page breaks
-	variable InHeader                	;# flag set when processing header
-	variable InFooter                	;# flag set when processing footer
-	variable AliasNbPages       	;# alias for total number of pages
-	variable ZoomMode                	;# zoom display mode
-	variable LayoutMode                	;# layout display mode
+	variable ws				;# word spacing
+	variable images			;# array of used images
+	variable PageLinks			;# array of links in pages
+	variable links				;# array of internal links
+	variable AutoPageBreak		;# automatic page breaking
+	variable PageBreakTrigger		;# threshold used to trigger page breaks
+	variable InHeader			;# flag set when processing header
+	variable InFooter			;# flag set when processing footer
+	variable AliasNbPages		;# alias for total number of pages
+	variable ZoomMode			;# zoom display mode
+	variable LayoutMode			;# layout display mode
 	variable metadata			;# document properties
 	variable CreationDate		;#document creation date
-	variable PDFVersion                	;# PDF version number
+	variable PDFVersion			;# PDF version number
 	variable Spaces4Tab			;#How spaces are a Tab ?
 	variable TAB				;# Constant with spaces according Space4Tab
 	
 proc ::tclfpdf::_Init {} {
 	global _version _isInit
-	variable w;
-	variable h;
+	variable w 0;
+	variable h 0;
 	;# Initialization of properties 
 	variable state 0;
 	variable page 0;
@@ -155,19 +155,19 @@ proc ::tclfpdf::_Init {} {
 	variable cmaps; array unset cmaps *;
 	variable images ; array unset images *;
 	variable links ; array unset links *;
-	variable InHeader  0;
-	variable InFooter  0;
-	variable lasth  0;
-	variable FontFamily  "";
-	variable FontStyle  "";
-	variable FontSizePt  12;
-	variable underline  0;
-	variable DrawColor  "0 G";
-	variable FillColor  "0 g";
-	variable TextColor  "0 g";
-	variable ColorFlag  0;
+	variable InHeader 0;
+	variable InFooter 0;
+	variable lasth 0;
+	variable FontFamily "";
+	variable FontStyle "";
+	variable FontSizePt 12;
+	variable underline 0;
+	variable DrawColor "0 G";
+	variable FillColor "0 g";
+	variable TextColor "0 g";
+	variable ColorFlag 0;
 	variable WithAlpha 0;
-	variable ws  0;
+	variable ws 0;
 	;# Added because tab is showed as square
 	variable Spaces4Tab 4;
 	variable TAB [string repeat " " $Spaces4Tab];
@@ -175,27 +175,19 @@ proc ::tclfpdf::_Init {} {
 	variable y -1; # Idem
 	;# Core fonts
 	variable CoreFonts [list courier helvetica times symbol zapfdingbats];
+	;# Automatic page break
+	SetAutoPageBreak 1;
 	;# Units
-	variable k;
 	SetUnit;
 	;# Page orientation
 	variable DefOrientation "p"
 	;# Page sizes
 	variable StdPageSizes;
-	array set StdPageSizes { a3 {841.89 1190.55 }  a4 {595.28 841.89} a5 {420.94 595.28} letter {612 792} legal {612 1008} };
+	array set StdPageSizes { a3 {841.89 1190.55 } a4 {595.28 841.89} a5 {420.94 595.28} letter {612 792} legal {612 1008} };
 	SetPageSize;
 	;#SetPageOrientation is not necessary because SetPageSize make that
 	;#Page rotation
 	variable CurRotation 0;
-	;# Page margins (1 cm)
-	set margin [expr 28.35/$k];
-	SetMargins $margin $margin;
-	;# Interior cell margin (1 mm)
-	variable cMargin  [expr $margin/10.0];
-	;# Line width (0.2 mm)
-	variable LineWidth [expr .567/$k];
-	;# Automatic page break
-	SetAutoPageBreak 1 [expr 2*$margin];
 	;# Default display mode
 	SetDisplayMode "default" ;
 	;# Enable compression
@@ -207,9 +199,9 @@ proc ::tclfpdf::_Init {} {
 	array set metadata [list Producer "TCLFPDF $VERSION"];
 	
 	;# Set default PDF version number
-	variable PDFVersion  "1.3";
+	variable PDFVersion "1.3";
 	if {[namespace which -command Header]== "::Header"} {
-		if {[namespace which -command Header]  =="::tclfpf::Header"} {
+		if {[namespace which -command Header] =="::tclfpf::Header"} {
 			rename ::tclfpdf::Header ""; 
 		}
 		rename Header ::tclfpdf::Header;
@@ -246,7 +238,7 @@ proc ::tclfpdf::_Init {} {
 					}
 			unix 		{
 						if { $::tcl_platform(os) eq "Darwin" } {
-							set  _systemfonts [list "/System/Library/Fonts" "/Libray/Fonts"];
+							set _systemfonts [list "/System/Library/Fonts" "/Libray/Fonts"];
 							set _userpath "$::env(HOME)/tclfpdf";
 						} else {			
 							set _systemfonts [list "/usr/share/fonts" "/usr/local/share/fonts" "$::env(HOME)/.fonts"];
@@ -260,54 +252,70 @@ proc ::tclfpdf::_Init {} {
 }
 
 # Add in TCLFPDF .... ---------------------------------------------------------------
-proc ::tclfpdf::SetUnit { { unit mm}  } {
+proc _SetPt {} {
+	variable wPt; variable hPt; variable w; variable h; variable k;
+	set wPt [expr $w*$k];
+	set hPt [expr $h*$k];
+} 
+
+proc ::tclfpdf::SetUnit { { unit mm} } {
 	;# Scale factor
-	variable k; 
+	variable k;
 	set unit [ string tolower $unit];
 	if {$unit == "pt"} {
 		set k 1;
 	} elseif {$unit=="mm"} {
-		set k  [expr 72/25.4];
+		set k [expr 72/25.4];
 	} elseif {$unit=="cm"} {
-		set k  [expr 72/2.54];
+		set k [expr 72/2.54];
 	} elseif {$unit=="in"} {
-		set k  72;
+		set k 72;
 	} else {
 		Error "Incorrect unit: $unit";
 	}
+	_SetPt;
+	;#(Re)Set Margins
+	;# Page margins (1 cm)
+	set margin [expr 28.35/$k];
+	SetMargins $margin $margin;
+	;# Interior cell margin (1 mm)
+	variable cMargin [expr $margin/10.0];
+	;# Line width (0.2 mm)
+	variable LineWidth [expr .567/$k];
+	;#break margin
+	variable bMargin [expr 2*$margin];
 }
 
 proc ::tclfpdf::SetPageSize { { size a4} } {
 	set size [ string tolower $size];
 	set size [ _getpagesize $size];
-	variable DefPageSize  $size;
-	variable CurPageSize  $size;
+	variable DefPageSize $size;
+	variable CurPageSize $size;
 	variable DefOrientation;
 	SetPageOrientation $DefOrientation;
 }
 
 proc ::tclfpdf::SetPageOrientation { {orientation p}} {
-	variable DefOrientation;
-	variable DefPageSize
-	variable k;
-	variable w;
-	variable h;
+	variable DefOrientation;variable DefPageSize;
+	variable w;variable h;variable bMargin;
+	variable PageBreakTrigger;
 	set size [ _getpagesize $DefPageSize];
 	set orientation [ string tolower $orientation];
 	if {$orientation=="p" || $orientation=="portrait"} {
-		set DefOrientation  "P";
-		set w  [lindex $size 0];
-		set h  [lindex  $size 1];
+		set DefOrientation "P";
+		set w [lindex $size 0];
+		set h [lindex $size 1];
 	} elseif {$orientation=="l" || $orientation=="landscape"} {
-		set DefOrientation  "L";
-		set w  [lindex $size 1] ;
-		set h  [lindex $size 0];
+		set DefOrientation "L";
+		set w [lindex $size 1] ;
+		set h [lindex $size 0];
 	} else {
 		Error "Incorrect orientation: $orientation";
-	}        
+	}
 	variable CurOrientation $DefOrientation;
-	variable wPt  [expr $w*$k];
-	variable hPt   [expr $h*$k];
+	_SetPt
+	;# Automatic page break
+	set PageBreakTrigger [expr $h-$bMargin];
 }
 
 # --------------------------------------------------------------------------------------
@@ -315,62 +323,62 @@ proc ::tclfpdf::SetPageOrientation { {orientation p}} {
 proc ::tclfpdf::SetMargins { left top {right ""} } {
 	variable lMargin; variable tMargin; variable rMargin; 
 	;# Set left, top and right margins
-	set lMargin  $left;
-	set tMargin  $top;
+	set lMargin $left;
+	set tMargin $top;
 	if {$right==""} {
-		set right  $left;
-	}        
-	set rMargin  $right;
+		set right $left;
+	}
+	set rMargin $right;
 }
 
 proc ::tclfpdf::SetLeftMargin { margin } {
 	variable page; variable lMargin;variable x;
 	;# Set left margin
-	set lMargin  $margin;
-	if {$page>0 &&  $x<$margin} {
-		set x  $margin;
+	set lMargin $margin;
+	if {$page>0 && $x<$margin} {
+		set x $margin;
 	}	
 }
 
 proc ::tclfpdf::SetTopMargin { margin } {
 	variable tMargin;
 	;# Set top margin
-	set tMargin  $margin;
+	set tMargin $margin;
 }
 
 proc ::tclfpdf::SetRightMargin { margin } {
 	variable rMargin;
 	;# Set right margin
-	set rMargin  $margin;
+	set rMargin $margin;
 }
 
 proc ::tclfpdf::SetAutoPageBreak { auto { margin 0} } {
 	variable bMargin; variable h; variable AutoPageBreak; variable PageBreakTrigger;
 	;# Set auto page break mode and triggering margin
-	set AutoPageBreak  $auto;
-	set bMargin  $margin;
-	set PageBreakTrigger  [expr $h-$margin];
+	set AutoPageBreak $auto;
+	set bMargin $margin;
+	set PageBreakTrigger [expr $h-$margin];
 }
 
-proc ::tclfpdf::SetDisplayMode { zoom  { layout default }} {
+proc ::tclfpdf::SetDisplayMode { zoom { layout default }} {
 	variable ZoomMode; variable LayoutMode;
 	;# Set display mode in viewer
 	if {$zoom=="fullpage" || $zoom=="fullwidth" || $zoom=="real" || $zoom=="default" || [string is integer $zoom]} {
-		set ZoomMode  $zoom;
+		set ZoomMode $zoom;
 	} else {
 		Error "Incorrect zoom display mode: $zoom" ;
-	}        
+	}
 	if {$layout=="single" || $layout=="continuous" || $layout=="two" || $layout=="default"} {
-		set LayoutMode  $layout;
+		set LayoutMode $layout;
 	} else {
-		Error "Incorrect layout display mode:  $layout" ;
-	}        
+		Error "Incorrect layout display mode: $layout" ;
+	}
 }
 
 proc ::tclfpdf::SetCompression { compress1 } {
 	variable compress;
 	;# Set page compression
-	set compress $compress1;        
+	set compress $compress1;
 }
 
 proc ::tclfpdf::SetTitle { title1 } {
@@ -400,13 +408,13 @@ proc ::tclfpdf::SetKeywords { keywords1 } {
 proc ::tclfpdf::SetCreator { creator1 } {
 	;# Creator of document
 	variable metadata;
-	set  metadata(creator) $creator1;
+	set metadata(creator) $creator1;
 }
 
 proc ::tclfpdf::AliasNbPages { {alias "%nb%"} } {
 	;# Define an alias for total number of pages
-	variable AliasNbPages;	
-	set AliasNbPages  $alias;
+	variable AliasNbPages;
+	set AliasNbPages $alias;
 }
 
 proc ::tclfpdf::Error { msg } {
@@ -425,24 +433,24 @@ proc ::tclfpdf::Close { } {
 		AddPage;
 	}	
 	;# Page footer
-	set InFooter  1;
+	set InFooter 1;
 	if {[namespace which -command Footer] ne "" } {
 		Footer;
 	}	
-	set InFooter  0;
+	set InFooter 0;
 	;# Close page
 	 _endpage ;
 	;# Close document
 	_enddoc ;
 }
 
-proc ::tclfpdf::AddPage { {orientation ""} {size ""}  {rotation 0}} {
+proc ::tclfpdf::AddPage { {orientation ""} {size ""} {rotation 0}} {
 	variable state; variable FontFamily; variable underline; variable FontSizePt;
 	variable LineWidth; variable DrawColor; variable FillColor; variable TextColor;
 	variable ColorFlag; variable page;variable k;variable FontStyle; variable InHeader;
 	variable InFooter;
 	;# Start a new page
-	if { $state==3}  {
+	if { $state==3} {
 		Error "The document is closed";
 	}	
 	set family $FontFamily;
@@ -451,20 +459,20 @@ proc ::tclfpdf::AddPage { {orientation ""} {size ""}  {rotation 0}} {
 	} else {
 		set underlined "";
 	}
-	set style  "$FontStyle$underlined";
+	set style "$FontStyle$underlined";
 	set fontsize $FontSizePt;
-	set lw  $LineWidth;
-	set dc  $DrawColor;
-	set fc  $FillColor;
-	set tc  $TextColor;
-	set cf  $ColorFlag;
+	set lw $LineWidth;
+	set dc $DrawColor;
+	set fc $FillColor;
+	set tc $TextColor;
+	set cf $ColorFlag;
 	if { $page>0} {
 		;# Page footer
-		set InFooter  1;
+		set InFooter 1;
 		if {[namespace which -command Footer] ne "" } {
 			Footer;
 		}	
-		set InFooter  0;
+		set InFooter 0;
 		;# Close page
 		_endpage;
 	}
@@ -473,29 +481,29 @@ proc ::tclfpdf::AddPage { {orientation ""} {size ""}  {rotation 0}} {
 	;# Set line cap style to square
 	_out "2 J";
 	;# Set line width
-	set LineWidth  $lw;
+	set LineWidth $lw;
 	_out [format "%.2f w" [expr $lw*$k]];
 	;# Set font
 	if {$family !=""} {
 		SetFont $family $style $fontsize;
-	}        
+	}
 	;# Set colors
-	set DrawColor  $dc;
+	set DrawColor $dc;
 	if {$dc !="0 G"} {
 		_out $dc;
-	}        
-	set FillColor  $fc;
+	}
+	set FillColor $fc;
 	if {$fc !="0 g"} {
 		 _out $fc;
 	}
-	set TextColor  $tc;
-	set ColorFlag  $cf;
+	set TextColor $tc;
+	set ColorFlag $cf;
 	;# Page header
-	set InHeader  1;
+	set InHeader 1;
 	if {[namespace which -command Header] ne "" } {
 		Header;
 	}	
-	set InHeader  0;
+	set InHeader 0;
 	;# Restore line width
 	if { $LineWidth!=$lw} {
 		set LineWidth $lw;
@@ -504,18 +512,18 @@ proc ::tclfpdf::AddPage { {orientation ""} {size ""}  {rotation 0}} {
 	;# Restore font
 	if {$family!=""} {
 		SetFont $family $style $fontsize;
-	}        
+	}
 	;# Restore colors
 	if { $DrawColor!=$dc} {
-		set DrawColor  $dc;                
-		_out  $dc;
+		set DrawColor $dc;
+		_out $dc;
 	}
 	if { $FillColor!=$fc} {
-		set FillColor  $fc;
+		set FillColor $fc;
 		_out $fc;
 	}
-	set TextColor  $tc;
-	set ColorFlag  $cf;
+	set TextColor $tc;
+	set ColorFlag $cf;
 }
 
 ;# proc ::tclfpdf::Header { } {
@@ -532,7 +540,7 @@ proc ::tclfpdf::PageNo { } {
 	return $page;
 }
 
-proc ::tclfpdf::SetDrawColor { r {g ""} {b ""}  } {
+proc ::tclfpdf::SetDrawColor { r {g ""} {b ""} } {
 	variable page; variable DrawColor;
 	if { ($g == "" ^ $b=="") } {
 		Error "Setting Draw Color : missing g or b parameter";
@@ -548,16 +556,16 @@ proc ::tclfpdf::SetDrawColor { r {g ""} {b ""}  } {
 	}
 }
 
-proc ::tclfpdf::SetFillColor { r  {g ""} {b ""} } {
+proc ::tclfpdf::SetFillColor { r {g ""} {b ""} } {
 	variable FillColor; variable page; variable TextColor;variable ColorFlag;	
 	if { ($g == "" ^ $b=="") } {
 		Error "Setting Fill Color : missing g or b parameter";
 	}
 	;# Set color for all filling operations
 	if { ($r==0 && $g==0 && $b==0) || $g==""} {
-		set FillColor  [format "%.3f g" [expr $r/255.00]];
+		set FillColor [format "%.3f g" [expr $r/255.00]];
 	} else {
-		set FillColor  [format "%.3f %.3f %.3f rg" [expr $r/255.00] [ expr $g/255.00] [ expr $b/255.00]];
+		set FillColor [format "%.3f %.3f %.3f rg" [expr $r/255.00] [ expr $g/255.00] [ expr $b/255.00]];
 	}	
 	set ColorFlag [ expr {$FillColor !=$TextColor} ];
 	if { $page >0 } {
@@ -565,16 +573,16 @@ proc ::tclfpdf::SetFillColor { r  {g ""} {b ""} } {
 	}	
 }
 
-proc ::tclfpdf::SetTextColor { r  {g ""} {b ""} } {
+proc ::tclfpdf::SetTextColor { r {g ""} {b ""} } {
 	variable TextColor; variable ColorFlag;variable FillColor;
 	if { ($g == "" ^ $b=="") } {
 		Error "Setting Text Color : missing g or b parameter";
 	}
 	;# Set color for text
 	if { ($r==0 && $g==0 && $b==0) || $g==""} {
-		set TextColor  [format "%.3f g" [expr $r/255.00]];
+		set TextColor [format "%.3f g" [expr $r/255.00]];
 	} else {
-		set TextColor  [format "%.3f %.3f %.3f rg" [expr $r/255.00] [expr $g/255.00] [expr $b/255.00]];
+		set TextColor [format "%.3f %.3f %.3f rg" [expr $r/255.00] [expr $g/255.00] [expr $b/255.00]];
 	}	
 	set ColorFlag [expr {$FillColor!=$TextColor} ]
 }
@@ -585,8 +593,8 @@ proc ::tclfpdf::GetStringWidth { s } {
 	set cw [ _getList2Arr $CurrentFont cw];
 	set CurrentFont_desc [_getList2Arr $CurrentFont desc]
 	set CurrentFont_MW [_getList2Arr $CurrentFont MissingWidth]
-	set w  0;
-	if  { $unifontSubset == 1 } {
+	set w 0;
+	if { $unifontSubset == 1 } {
 		set unicode [_UTF8StringToArray $s];
 		foreach char $unicode {
 			if { [_getchar $cw [expr 2*$char]] ne "" } {
@@ -594,21 +602,21 @@ proc ::tclfpdf::GetStringWidth { s } {
 			} elseif { $char>0 && $char<128 && [ _getchar $cw [format %c $char]] ne "" } { 
 				set w [expr $w + [_getchar $cw [format %c $char]]];
 			} elseif { [isset CurrentFont_desc)] && [MissingWidth in $CurrentFont_desc]} {
-				set mw  [lindex $CurrentFont_desc [lsearch $CurrentFont_desc MissingWidth ] ];
+				set mw [lindex $CurrentFont_desc [lsearch $CurrentFont_desc MissingWidth ] ];
 				set w [expr $w+ $mw];
-			} elseif  { [isset CurrentFont_MW)]}  { 
+			} elseif { [isset CurrentFont_MW)]} { 
 				set w [expr $w+ $CurrentFont_MW]; 
 			} else { 
 				set w [expr $w+ 500];
 			}
 		}
 	} else {
-		set l  [string  length  $s];
+		set l [string length $s];
 		for { set i 0} {$i<$l} {incr i} {
 			set w [expr $w + [_findchar $cw [_getchar $s $i]]];
 		}
 	}	
-	return  [expr $w*$FontSize/1000.00];
+	return [expr $w*$FontSize/1000.00];
 }
 proc ::tclfpdf::SetLineWidth { width } {
 	variable page; variable LineWidth;variable k;
@@ -629,11 +637,11 @@ proc ::tclfpdf::Rect { x1 y1 w1 h1 {style "" } } {
 	variable k; variable h;
 	;# Draw a rectangle
 	if {$style=="F"} {
-		set op  "f";
+		set op "f";
 	} elseif {$style=="FD" || $style=="DF"} {
-		set op  "B";
+		set op "B";
 	} else {
-		set op  "S";
+		set op "S";
 	}
 	_out [format "%.2f %.2f %.2f %.2f re %s" [expr $x1*$k] [expr ($h-$y1)*$k] [expr $w1*$k] [expr -$h1*$k] $op ];
 }
@@ -650,9 +658,9 @@ proc ::tclfpdf::AddFont { family {style ""} {file ""} {uni 0}} {
 		set ffamily [string map {" " ""} $family];
 		set fstyle [string tolower $style];
 		if {$uni} {
-			set file  "$ffamily$fstyle.ttf";
+			set file "$ffamily$fstyle.ttf";
 		} else {
-			set file  "$ffamily$fstyle.tcl";
+			set file "$ffamily$fstyle.tcl";
 		}
 	} else {
 		set ext [file extension $file]
@@ -666,11 +674,11 @@ proc ::tclfpdf::AddFont { family {style ""} {file ""} {uni 0}} {
 			} 
 		}
 	}
-	set fontkey  "$family$style";
+	set fontkey "$family$style";
 	if {[isset fonts($fontkey)]} {
 		return;
 	}
-	if  {$uni } {	
+	if {$uni } {	
 		set ttffilename [_SearchPathFile $file];
 		set unifilename "$TCLFPDF_USERPATH/[string tolower [file rootname $file]]";
 		set name "";
@@ -679,21 +687,21 @@ proc ::tclfpdf::AddFont { family {style ""} {file ""} {uni 0}} {
 		if { [file exists $unifilename.mtx.tcl]} {
 			source -encoding utf-8 $unifilename.mtx.tcl;
 		}
-		if {! [isset type] ||  ![isset name] || $originalsize != $ttfstat(size)} {
+		if {! [isset type] || ![isset name] || $originalsize != $ttfstat(size)} {
 			set ttffile $ttffilename;
 			source -encoding utf-8 "$TCLFPDF_COREFONTSPATH/ttf_font.tcl";
 			ttf_Init;
 			ttf_getMetrics $ttffile;
 			set long [array size ttf_charWidths];
-			for {set x 0}  {$x <  $long} {incr x} {
+			for {set x 0} {$x < $long} {incr x} {
 				append cw $ttf_charWidths($x);
 			}
 			set name [ string map { \[ {} \( {} \) {} \] {} } $ttf_fullName];
 			array set desc [list "Ascent" [expr round($ttf_ascent)] "Descent" [expr round($ttf_descent)] "CapHeight" [expr round($ttf_capHeight)] "Flags" $ttf_flags "FontBBox" "\[ [expr round($ttf_bbox(0))] [expr round($ttf_bbox(1))] [expr round($ttf_bbox(2))] [expr round($ttf_bbox(3))] \]" "ItalicAngle" $ttf_italicAngle "StemV" [expr round($ttf_stemV)] "MissingWidth" [expr round($ttf_defaultWidth)]];
 			set up [expr round($ttf_underlinePosition)];
 			set ut [expr round($ttf_underlineThickness)];
-			set originalsize  [expr $ttfstat(size)+0 ];# 0? sic
-			set type  "TTF";
+			set originalsize [expr $ttfstat(size)+0 ];# 0? sic
+			set type "TTF";
 			;#Generate metrics .tcl file
 			append s "set name \"$name\" ;\n";
 			append s "set type \"$type\";\n";
@@ -706,12 +714,12 @@ proc ::tclfpdf::AddFont { family {style ""} {file ""} {uni 0}} {
 			if {[catch {open "$unifilename.mtx.tcl" "wb" } fh ]} {
 				Error "Can't open file: $unifilename.mtx.tcl";
 			}
-			puts  -nonewline $fh $s ;#[string length $s];
+			puts -nonewline $fh $s ;#[string length $s];
 			close $fh;
 			if {[catch {open "$unifilename.cw.dat" "wb" } fh ]} {
 				Error "Can't open file: $unifilename.cw.dat";
 			}
-			puts  -nonewline $fh $cw;#[string length $cw];
+			puts -nonewline $fh $cw;#[string length $cw];
 			close $fh;
 		} else {
 			if {[catch {open "$unifilename.cw.dat" "rb" } fcw ]} {
@@ -735,10 +743,10 @@ proc ::tclfpdf::AddFont { family {style ""} {file ""} {uni 0}} {
 				if {$j==32} break;
 			}
 		}
-		set fonts($fontkey) [list "i" $i  "type" $type  "name" $name  "desc" [array get desc]  "up" $up  "ut" $ut  "cw" $cw "ttffile" $ttffile  "fontkey" $fontkey  "subset" $sbarr  "unifilename" $unifilename];
+		set fonts($fontkey) [list "i" $i "type" $type "name" $name "desc" [array get desc] "up" $up "ut" $ut "cw" $cw "ttffile" $ttffile "fontkey" $fontkey "subset" $sbarr "unifilename" $unifilename];
 			
 		set FontFiles($fontkey) [list "length1" $originalsize "type" "TTF" "ttffile" $ttffile];
-		set FontFiles($file)  "type TTF";
+		set FontFiles($file) "type TTF";
 		unset cw;		
 	} else {
 		array set info [ _loadfont $file];
@@ -762,62 +770,62 @@ proc ::tclfpdf::SetFont { family {style ""} {size 0} } {
 	variable unifontSubset;
 	;# Select a font; size given in points
 	if {$family==""} {
-		set family  $FontFamily;
+		set family $FontFamily;
 	} else {
 		set family [string tolower $family];
-	}        
-	set style  [string toupper $style];
+	}
+	set style [string toupper $style];
 	if {[string first "U" $style] !=-1} {
-		set underline  1;
+		set underline 1;
 		set style [string map {"U" ""} $style];
 	} else {
-		set underline  0;
-	}        
+		set underline 0;
+	}
 	if {$style=="IB"} {
-		set style  "BI";
-	}        
+		set style "BI";
+	}
 	if {$size==0} {
-		set size  $FontSizePt;
-	}        
+		set size $FontSizePt;
+	}
 	;# Test if font is already selected
 	if { $FontFamily==$family && $FontStyle==$style && $FontSizePt==$size} {
 		return;
-	}        
+	}
 	;# Test if font is already loaded
-	set fontkey  "$family$style";
-	if {[lsearch [array names fonts]  $fontkey ] ==-1} {
+	set fontkey "$family$style";
+	if {[lsearch [array names fonts] $fontkey ] ==-1} {
 		;# Test if one of the core fonts
 		if {$family=="arial"} {
-		        set family "helvetica";
-		}        
+			set family "helvetica";
+		}
 		if {[lsearch $CoreFonts $family]!=-1} {
-		        if {$family=="symbol" || $family=="zapfdingbats"} {
-		                set style  "";
-		        }        
-		        set fontkey  "$family$style";
-		        if {[lsearch [array names fonts]  $fontkey ] ==-1} {
+			if {$family=="symbol" || $family=="zapfdingbats"} {
+				set style "";
+			}
+			set fontkey "$family$style";
+			if {[lsearch [array names fonts] $fontkey ] ==-1} {
 			
-		                 AddFont $family $style;
-		        }        
+				AddFont $family $style;
+			}
 		} else {
-		        Error "Undefined font: $family $style";
-		}        
+			Error "Undefined font: $family $style";
+		}
 	}
 	;# Select it
-	set FontFamily  $family;
-	set FontStyle  $style;
-	set FontSizePt  $size;
-	set FontSize  [expr $size/$k];
+	set FontFamily $family;
+	set FontStyle $style;
+	set FontSizePt $size;
+	set FontSize [expr $size/$k];
 	upvar 0 fonts($fontkey) ::tclfpdf::CurrentFont;
 	
 	if {[ _getList2Arr $fonts($fontkey) type]=="TTF"} { 
-		set unifontSubset  1;
+		set unifontSubset 1;
 	} else { 
 		set unifontSubset 0;
 	}
 	if {$page>0} {
 		_out [format "BT /F%d %.2f Tf ET" [_getList2Arr $::tclfpdf::CurrentFont i] $FontSizePt];
-	}        
+	}
 }
 
 proc ::tclfpdf::SetFontSize {size} {
@@ -825,12 +833,12 @@ proc ::tclfpdf::SetFontSize {size} {
 	variable FontSize;variable page;variable k;variable FontSizePt; variable CurrentFont;	
 	if { $FontSizePt==$size} {
 		return;
-	}	
-	set FontSizePt  $size;
-	set FontSize  [expr $size/$k];
+	}
+	set FontSizePt $size;
+	set FontSize [expr $size/$k];
 	if { $page>0} {
-		_out [format "BT /F%d %.2f Tf ET" [_getList2Arr $CurrentFont i ]  $FontSizePt];
-	}	
+		_out [format "BT /F%d %.2f Tf ET" [_getList2Arr $CurrentFont i ] $FontSizePt];
+	}
 }
 
 proc ::tclfpdf::AddLink { } {
@@ -841,7 +849,7 @@ proc ::tclfpdf::AddLink { } {
 	return $n;
 }
 
-proc ::tclfpdf::SetLink { link  {y1 {0}} {page1 {-1}}} {
+proc ::tclfpdf::SetLink { link {y1 {0}} {page1 {-1}}} {
 	;# Set destination of internal link
 	variable links; variable y; variable page;
 	if {$y1 == -1} {
@@ -850,7 +858,7 @@ proc ::tclfpdf::SetLink { link  {y1 {0}} {page1 {-1}}} {
 	if {$page1 == -1} {
 		set page1 $page;
 	}	
-	array set links [list $link  [list $page1 $y1]];
+	array set links [list $link [list $page1 $y1]];
 }
 
 proc ::tclfpdf::Link { x y w h link} {
@@ -859,17 +867,17 @@ proc ::tclfpdf::Link { x y w h link} {
 	set nl 0
 	set i 0
 	while (1) {
-	      	if {[array names PageLinks -exact $page,$i ] eq {}} {
-		    set nl $i;
-		    break;	
+		if {[array names PageLinks -exact $page,$i ] eq {}} {
+			set nl $i;
+			break;
 		} else {
-		   incr i;
+			incr i;
 		}
 	}
-	set PageLinks($page,$nl)  [list  [expr $x*$k] [expr $hPt-$y*$k]  [expr $w*$k] [expr $h*$k] $link];
+	set PageLinks($page,$nl) [list [expr $x*$k] [expr $hPt-$y*$k] [expr $w*$k] [expr $h*$k] $link];
 }
 
-proc ::tclfpdf::Text {x  y txt } {
+proc ::tclfpdf::Text {x y txt } {
 	;# Output a string
 	variable k; variable h; variable underline; variable ColorFlag;
 	variable unifontSubset; variable CurrentFont; variable fonts;
@@ -878,7 +886,7 @@ proc ::tclfpdf::Text {x  y txt } {
 	}		
 	if {$unifontSubset == 1} {
 		set txt2 "([_escape [_UTF8toUTF16BE $txt 0]])";
-		foreach  uni [_UTF8StringToArray $txt] {
+		foreach uni [_UTF8StringToArray $txt] {
 			if {$uni ni [_getList2Arr $CurrentFont subset]} {
 				_setSubList CurrentFont subset $uni;
 			}
@@ -886,12 +894,12 @@ proc ::tclfpdf::Text {x  y txt } {
 	} else { 
 		set txt2 "([_escape $txt])";
 	}	
-	set s  [format "BT %.2f %.2f Td %s Tj ET" [expr $x*$k] [expr ($h-$y)*$k] $txt2];
+	set s [format "BT %.2f %.2f Td %s Tj ET" [expr $x*$k] [expr ($h-$y)*$k] $txt2];
 	if { $underline == 1 && $txt!="" } {
 		append s " [_dounderline $x $y $txt]";
 	}	
 	if { $ColorFlag == 1 } {
-		set s  "$q $TextColor $s $Q";
+		set s "$q $TextColor $s $Q";
 	}	
 	_out $s;
 }
@@ -909,48 +917,48 @@ proc ::tclfpdf::Cell {w1 {h1 0} {txt ""} {border 0} {ln 0} {align ""} {fill 0} {
 	variable underline;variable lMargin;variable CurOrientation; variable CurPageSize;
 	variable CurRotation; variable unifontSubset; variable CurrentFont; variable fonts;
 	;# Output a cell
-	set k1  $k;
+	set k1 $k;
 	if { [expr $y+$h1] >$PageBreakTrigger && !$InHeader && !$InFooter && [AcceptPageBreak] } {
 		;# Automatic page break
 		set x1 $x;
 		set ws1 $ws;
 		if {$ws1>0} {
-		        set ws  0; 
-		        _out "0 Tw";
+			set ws 0; 
+			_out "0 Tw";
 		}
 		AddPage $CurOrientation $CurPageSize $CurRotation;
-		set x  $x1;
+		set x $x1;
 		if {$ws1>0} {
-		        set ws  $ws1; 
-		        _out [format "%.3f Tw" [expr $ws1*$k1]];
+			set ws $ws1; 
+			_out [format "%.3f Tw" [expr $ws1*$k1]];
 		}
 	}
 	if {$w1==0} {
-		set w1  [expr  $w-$rMargin-$x];
+		set w1 [expr $w-$rMargin-$x];
 	}	
-	set s  "";
-	if {$fill !=0  || $border==1} {
+	set s "";
+	if {$fill !=0 || $border==1} {
 		if {$fill !=0} {
-		        set op [expr {$border==1 ? "B" : "f"}];
+			set op [expr {$border==1 ? "B" : "f"}];
 		} else {
-		        set op  "S";
+			set op "S";
 		}
-		set s  [format "%.2f %.2f %.2f %.2f re %s " [expr $x*$k1] [expr ($h-$y)*$k1] [expr $w1*$k1] [expr -$h1*$k1] $op];
+		set s [format "%.2f %.2f %.2f %.2f re %s " [expr $x*$k1] [expr ($h-$y)*$k1] [expr $w1*$k1] [expr -$h1*$k1] $op];
 	}
 	if {[string is alpha $border]} {
-		set x1  $x;
-		set y1  $y;
+		set x1 $x;
+		set y1 $y;
 		if {[string first "L" $border]!=-1} {
-		        append s [format  "%.2f %.2f m %.2f %.2f l S " [expr $x1*$k1] [expr ($h-$y1)*$k1] [ expr $x1*$k1] [expr ($h-($y1+$h1))*$k1]];
+			append s [format "%.2f %.2f m %.2f %.2f l S " [expr $x1*$k1] [expr ($h-$y1)*$k1] [ expr $x1*$k1] [expr ($h-($y1+$h1))*$k1]];
 		}	
 		if {[string first "T" $border]!=-1} {
 			append s [format "%.2f %.2f m %.2f %.2f l S " [expr $x1*$k1] [expr ($h-$y1)*$k1] [expr ($x1+$w1)*$k1] [expr ($h-$y1)*$k1] ];
 		}	
 		if {[string first "R" $border]!=-1} {
-		        append s [format "%.2f %.2f m %.2f %.2f l S " [expr ($x1+$w1)*$k1] [ expr ($h-$y1)*$k1] [ expr ($x1+$w1)*$k1] [ expr ($h-($y1+$h1))*$k1]];
+			append s [format "%.2f %.2f m %.2f %.2f l S " [expr ($x1+$w1)*$k1] [ expr ($h-$y1)*$k1] [ expr ($x1+$w1)*$k1] [ expr ($h-($y1+$h1))*$k1]];
 		}	
 		if {[string first "B" $border]!=-1} {
-		        append s [format  "%.2f %.2f m %.2f %.2f l S " [expr $x1*$k1] [expr ($h-($y1+$h1))*$k1] [expr ($x1+$w1)*$k1] [expr ($h-($y1+$h1))*$k1]];
+			append s [format "%.2f %.2f m %.2f %.2f l S " [expr $x1*$k1] [expr ($h-($y1+$h1))*$k1] [expr ($x1+$w1)*$k1] [expr ($h-($y1+$h1))*$k1]];
 		}	
 	}
 	if {$txt != ""} {
@@ -961,13 +969,13 @@ proc ::tclfpdf::Cell {w1 {h1 0} {txt ""} {border 0} {ln 0} {align ""} {fill 0} {
 			set align "L"
 		}
 		switch -- $align {
-			"R"  { set dx [expr $w1-$cMargin- [GetStringWidth $txt]] }
-			"C"  { set dx [expr ($w1-[GetStringWidth $txt ])/2.00] } 
-			"L"   { set dx $cMargin }
+			"R" { set dx [expr $w1-$cMargin- [GetStringWidth $txt]] }
+			"C" { set dx [expr ($w1-[GetStringWidth $txt ])/2.00] } 
+			"L" { set dx $cMargin }
 			default { Error " Invalid cell align: $align" }
 		}
 		if {$ColorFlag ==1 } {
-		        append s " q $TextColor ";
+			append s " q $TextColor ";
 		}
 		#If multibyte, Tw has no effect - do word spacing using an adjustment before each space
 		if {$ws !=0 && $unifontSubset ==1} {
@@ -982,7 +990,7 @@ proc ::tclfpdf::Cell {w1 {h1 0} {txt ""} {border 0} {ln 0} {align ""} {fill 0} {
 			set numt [llength $t];
 			for {set i 0} {$i<$numt} {incr i} {
 				set tx [lindex $t $i];
-				set tx  "([_escape [_UTF8toUTF16BE $tx 0]])";
+				set tx "([_escape [_UTF8toUTF16BE $tx 0]])";
 				append s [format "%s " $tx];
 				if { ($i+1)<$numt} {
 					set adj [expr int (-($ws*$k)*1000/$FontSizePt)];
@@ -990,7 +998,7 @@ proc ::tclfpdf::Cell {w1 {h1 0} {txt ""} {border 0} {ln 0} {align ""} {fill 0} {
 				}
 			}
 			append s "\] TJ";
-			append s  " ET";
+			append s " ET";
 		} else {
 			if {$unifontSubset==1} {
 				set txt2 "([_escape [_UTF8toUTF16BE $txt 0]])";
@@ -1005,13 +1013,13 @@ proc ::tclfpdf::Cell {w1 {h1 0} {txt ""} {border 0} {ln 0} {align ""} {fill 0} {
 			append s [format "BT %.2f %.2f Td %s Tj ET" [expr ($x+$dx)*$k] [expr ($h-($y+.5*$h1+.3*$FontSize))*$k] $txt2];
 		}
 		if {$underline == 1} {
-		        append  s " [_dounderline [expr $x+$dx] [ expr $y+0.5*$h1+0.3*$FontSize] $txt]";
+			append s " [_dounderline [expr $x+$dx] [ expr $y+0.5*$h1+0.3*$FontSize] $txt]";
 		}	
 		if {$ColorFlag == 1} {
-		        append s " Q";
+			append s " Q";
 		}	
 		if {$link!=""} {
-		        Link [expr $x+$dx] [expr $y+0.5*$h1-0.5*$FontSize] [GetStringWidth $txt ] $FontSize $link;
+			Link [expr $x+$dx] [expr $y+0.5*$h1-0.5*$FontSize] [GetStringWidth $txt ] $FontSize $link;
 		}	
 	}
 	if {$s!=""} {
@@ -1022,7 +1030,7 @@ proc ::tclfpdf::Cell {w1 {h1 0} {txt ""} {border 0} {ln 0} {align ""} {fill 0} {
 		;# Go to next line
 		set y [expr $y+$h1];
 		if {$ln==1} {
-		        set x $lMargin;
+			set x $lMargin;
 		}	
 	} else {
 		set x [expr $x+$w1];
@@ -1036,18 +1044,18 @@ proc ::tclfpdf::MultiCell {w1 h1 txt {border 0} {align "J"} {fill 0}} {
 	if {![isset CurrentFont]} {
 		Error "No font has been set";
 	}
-	set cw  [_getList2Arr $CurrentFont cw];
+	set cw [_getList2Arr $CurrentFont cw];
 	if {$w1==0} {
-		set w1  [expr $w-$rMargin-$x];
+		set w1 [expr $w-$rMargin-$x];
 	}	
-	set wmax  [expr ($w1-2*$cMargin)];
-	set s  [string map [list \r "" \t $TAB] $txt];
+	set wmax [expr ($w1-2*$cMargin)];
+	set s [string map [list \r "" \t $TAB] $txt];
 	if {$unifontSubset == 1} {
 		set nb [utf8len $s];
-		while {$nb >0 && [utf8substr $s [expr $nb -1] 1]  == "\n" } {
+		while {$nb >0 && [utf8substr $s [expr $nb -1] 1] == "\n" } {
 			incr nb -1;
 		} 
-	}  else {
+	} else {
 		set nb [string length $s];
 		set idx [expr $nb-1]
 		if {$nb>0 && [string index $s $idx] =="\n"} {
@@ -1057,30 +1065,30 @@ proc ::tclfpdf::MultiCell {w1 h1 txt {border 0} {align "J"} {fill 0}} {
 	set b 0;
 	if {$border!=0} {
 		if {$border==1} {
-		        set border "LTRB";
-		        set b "LRT";
-		        set b2 "LR";
+			set border "LTRB";
+			set b "LRT";
+			set b2 "LR";
 		} else {
-		        set b2  "";
-		        if {[string first "L" $border]!=-1} {
-		                append b2  L;
+			set b2 "";
+			if {[string first "L" $border]!=-1} {
+				append b2 L;
 			}	
-		        if {[string first "R" $border]!=-1} {
-		                append b2 R;
+			if {[string first "R" $border]!=-1} {
+				append b2 R;
 			}	
-		        if {[string first "T" $border]!=-1} {
-		                append b  T; 
+			if {[string first "T" $border]!=-1} {
+				append b T; 
 			} else {
-		                set b $b2;
+				set b $b2;
 			}	
 		}
 	}
 	set sep -1;
-	set i  0;
-	set j  0;
-	set l  0;
-	set ns  0;
-	set nl  1;
+	set i 0;
+	set j 0;
+	set l 0;
+	set ns 0;
+	set nl 1;
 	while {$i<$nb} {
 		;# Get next character
 		if {$unifontSubset==1} {
@@ -1089,27 +1097,27 @@ proc ::tclfpdf::MultiCell {w1 h1 txt {border 0} {align "J"} {fill 0}} {
 			set c [string index $s $i];
 		}	
 		if {$c=="\n"} {
-		        ;# Explicit line break
-		        if { $ws>0} {
-		                set ws  0;
-		                _out "0 Tw";
-		        }
+			;# Explicit line break
+			if { $ws>0} {
+				set ws 0;
+				_out "0 Tw";
+			}
 			Cell $w1 $h1 [ utf8substr $s $j [expr $i-$j]] $b 2 $align $fill;
-		        incr i;
-		        set sep -1;
-		        set j  $i;
-		        set l  0;
-		        set ns  0;
-		        incr nl;
-		        if {$border !=0 && $nl==2} {
-		                set b $b2;
+			incr i;
+			set sep -1;
+			set j $i;
+			set l 0;
+			set ns 0;
+			incr nl;
+			if {$border !=0 && $nl==2} {
+				set b $b2;
 			}	
-		        continue;
+			continue;
 		}
 		if {$c==" "} {
-		        set sep $i;
-		        set ls $l;
-		        incr ns;
+			set sep $i;
+			set ls $l;
+			incr ns;
 		}
 		if {$unifontSubset==1} { 
 			set l [expr $l + [GetStringWidth $c]];
@@ -1117,39 +1125,39 @@ proc ::tclfpdf::MultiCell {w1 h1 txt {border 0} {align "J"} {fill 0}} {
 			set l [expr $l + ([_findchar $cw $c]*$FontSize/1000)];
 		}
 		if {$l>$wmax } {
-		        ;# Automatic line break
-		        if {$sep==-1} {			
-		                if {$i==$j} {
+		;# Automatic line break
+			if {$sep==-1} {
+				if {$i==$j} {
 					incr i;
 				}	
-		                if { $ws>0} {
-		                        set ws  0;
-		                        _out "0 Tw";
-		                }
-		                Cell $w1 $h1 [utf8substr $s $j [expr $i-$j]] $b 2 $align $fill;
-		        } else {			
-		                if {$align=="J"} {
-		                        set ws  [expr {($ns>1) ? ($wmax-$ls)/($ns-1) : 0}];
-		                        _out [format "%.3f Tw" [expr $ws*$k]];
-		                }
-		                Cell $w1 $h1 [utf8substr $s $j [expr $sep-$j]] $b 2 $align $fill;
-		                set i  [expr $sep + 1];
-		        }			
-		        set sep  -1;
-		        set j  $i;
-		        set l  0;
-		        set ns  0;
-		        incr nl;
-		        if {$border!=0 && $nl==2} {
-		                set b $b2;
-			}	
+				if { $ws>0} {
+					set ws 0;
+					_out "0 Tw";
+				}
+				Cell $w1 $h1 [utf8substr $s $j [expr $i-$j]] $b 2 $align $fill;
+			} else {			
+				if {$align=="J"} {
+					set ws [expr {($ns>1) ? ($wmax-$ls)/($ns-1) : 0}];
+					_out [format "%.3f Tw" [expr $ws*$k]];
+				}
+				Cell $w1 $h1 [utf8substr $s $j [expr $sep-$j]] $b 2 $align $fill;
+				set i [expr $sep + 1];
+			}
+			set sep -1;
+			set j $i;
+			set l 0;
+			set ns 0;
+			incr nl;
+			if {$border!=0 && $nl==2} {
+				set b $b2;
+			}
 		} else {
-		        incr i;
-		}	
+			incr i;
+		}
 	}
 	;# Last chunk
 	if { $ws>0} {
-		set ws  0;
+		set ws 0;
 		_out "0 Tw";
 	}
 	if {$border!=0 && [string first "B" $border]!=-1} {
@@ -1167,10 +1175,10 @@ proc ::tclfpdf::Write { h1 txt {link "" }} {
 	if {![isset CurrentFont]} {
 		Error "No font has been set";
 	}
-	set cw  [_getList2Arr $CurrentFont cw];
-	set w1  [expr $w-$rMargin-$x];
-	set wmax  [expr ($w1-2*$cMargin)];
-	set s  [string map [list \r "" \t $TAB] $txt];
+	set cw [_getList2Arr $CurrentFont cw];
+	set w1 [expr $w-$rMargin-$x];
+	set wmax [expr ($w1-2*$cMargin)];
+	set s [string map [list \r "" \t $TAB] $txt];
 	if {$unifontSubset==1} {
 		set nb [utf8len $s];
 		if {$nb==1 && $s==" "} {
@@ -1178,33 +1186,33 @@ proc ::tclfpdf::Write { h1 txt {link "" }} {
 			return;
 		}
 	} else {
-		set nb  [ string length $s ];
+		set nb [ string length $s ];
 	}
-	set sep  -1;
-	set i  0;
-	set j  0;
-	set l  0;
-	set nl  1;
+	set sep -1;
+	set i 0;
+	set j 0;
+	set l 0;
+	set nl 1;
 	while {$i<$nb} {
 		;# Get next character
 		set c [utf8substr $s $i 1];
 		if {$c=="\n"} {
-		        ;# Explicit line break
-		        Cell $w1 $h1 [ utf8substr $s $j [expr $i-$j] ] 0 2 "" 0 $link;
-		        incr i;
-		        set sep  -1;
-		        set j  $i;
-		        set l  0;
-		        if {$nl==1} {
-		                set x  $lMargin;
-		                set w1  [expr $w-$rMargin-$x];
-		                set wmax [expr ($w1-2*$cMargin)];
-		        }
-		        incr nl;
-		        continue;
+			;# Explicit line break
+			Cell $w1 $h1 [ utf8substr $s $j [expr $i-$j] ] 0 2 "" 0 $link;
+			incr i;
+			set sep -1;
+			set j $i;
+			set l 0;
+			if {$nl==1} {
+				set x $lMargin;
+				set w1 [expr $w-$rMargin-$x];
+			set wmax [expr ($w1-2*$cMargin)];
+			}
+			incr nl;
+			continue;
 		}
 		if {$c==" "} {
-		        set sep  $i;
+			set sep $i;
 		}
 		if {$unifontSubset==1} { 
 			set l [expr $l + [GetStringWidth $c]];
@@ -1212,38 +1220,38 @@ proc ::tclfpdf::Write { h1 txt {link "" }} {
 			set l [expr $l + ([_findchar $cw $c]*$FontSize/1000)];
 		}
 		if {$l>$wmax} {
-		        ;# Automatic line break
-		        if {$sep==-1} {
-		                if { $x>$lMargin} {
-		                        ;# Move to next line
-		                        set x  $lMargin;
-		                        set y [expr $y+ $h1];
-		                        set w1 [expr $w-$rMargin-$x];
-		                        set wmax  [expr ($w-2*$cMargin)];
-		                        incr i;
-		                        incr nl;
-		                        continue;
-		                }
-		                if {$i==$j} {
-		                        incr i;
-				}	
-		                Cell $w1 $h1 [utf8substr $s $j [expr $i-$j ]] 0 2 "" 0 $link;
-		        } else {
-		                Cell $w1 $h1 [utf8substr $s $j [expr $sep-$j ]] 0 2 "" 0 $link;
-		                set i [expr $sep+1];
-		        }
-		        set sep  -1;
-		        set j  $i;
-		        set l  0;
-		        if {$nl==1} {
-		                set x  $lMargin;
-		                set w1  [expr $w-$rMargin-$x];
-		                set wmax [expr ($w1-2*$cMargin)];
-		        }
-		        incr nl;
+			;# Automatic line break
+			if {$sep==-1} {
+				if { $x>$lMargin} {
+					;# Move to next line
+					set x $lMargin;
+					set y [expr $y+ $h1];
+					set w1 [expr $w-$rMargin-$x];
+					set wmax [expr ($w-2*$cMargin)];
+					incr i;
+					incr nl;
+					continue;
+				}
+				if {$i==$j} {
+					incr i;
+				}
+				Cell $w1 $h1 [utf8substr $s $j [expr $i-$j ]] 0 2 "" 0 $link;
+			} else {
+				Cell $w1 $h1 [utf8substr $s $j [expr $sep-$j ]] 0 2 "" 0 $link;
+				set i [expr $sep+1];
+			}
+			set sep -1;
+			set j $i;
+			set l 0;
+			if {$nl==1} {
+			set x $lMargin;
+				set w1 [expr $w-$rMargin-$x];
+				set wmax [expr ($w1-2*$cMargin)];
+			}
+			incr nl;
 		} else {
-		        incr i;
-		}	
+			incr i;
+		}
 	}
 	;# Last chunk
 	if {$i !=$j} {
@@ -1252,7 +1260,7 @@ proc ::tclfpdf::Write { h1 txt {link "" }} {
 }
 
 proc ::tclfpdf::Ln { {h ""} } {
-	variable lMargin;variable y; variable lasth;variable x;	
+	variable lMargin;variable y; variable lasth;variable x;
 	;# Line feed; default value is the last cell height
 	set x $lMargin;
 	if {$h==""} {
@@ -1262,7 +1270,7 @@ proc ::tclfpdf::Ln { {h ""} } {
 	}	
 }
 
-proc ::tclfpdf::Image { file { x1 "" } { y1 "" } { w1 "" } { h1  "" }  { type1 "" } { link1 "" } } {
+proc ::tclfpdf::Image { file { x1 "" } { y1 "" } { w1 "" } { h1 "" } { type1 "" } { link1 "" } } {
 	variable images; variable k; variable y; variable x; variable Link;variable h;
 	variable PageBreakTrigger; variable InHeader; variable InFooter;
 	variable CurOrientation; variable CurPageSize; variable CurRotation
@@ -1282,22 +1290,22 @@ proc ::tclfpdf::Image { file { x1 "" } { y1 "" } { w1 "" } { h1  "" }  { type1 "
 	if {[lsearch [array names images] $file1 ] ==-1}	{
 		;# First use of this image, get info
 		if {$type1==""} {
-		        set pos [string last "." $file1];
-		        if {$pos==-1} {
-		                Error "Image file has no extension and no type was specified: $file";
+			set pos [string last "." $file1];
+			if {$pos==-1} {
+				Error "Image file has no extension and no type was specified: $file";
 			}	
-		        set type1 [_substr $file1 [expr $pos+1] ];
+			set type1 [_substr $file1 [expr $pos+1] ];
 		}
 		set type1 [string tolower $type1];
 		if {$type1=="jpeg"} {
-		        set type1 "jpg";
-		}	
-		set mtd  "_parse$type1";
+			set type1 "jpg";
+		}
+		set mtd "_parse$type1";
 		if {[lsearch [info procs] $mtd] == -1} {
-		        Error "Unsupported image type: $type1";
+			Error "Unsupported image type: $type1";
 		}
 		array set info [$mtd $file];
-		array set info "i  [expr [array size images]+1]";
+		array set info "i [expr [array size images]+1]";
 		set imagesl [ list [array get info]];
 		array set images "$file1 $imagesl";
 	} else {
@@ -1306,8 +1314,8 @@ proc ::tclfpdf::Image { file { x1 "" } { y1 "" } { w1 "" } { h1  "" }  { type1 "
 	;# Automatic width and height calculation if needed
 	if {$w1==0 && $h1==0}	{
 		;# Put image at 96 dpi
-		set w1  -96;
-		set h1  -96;
+		set w1 -96;
+		set h1 -96;
 	}
 	if {$w1<0} {
 		set w1 [expr -$info(w)*72/$w1/$k];
@@ -1316,25 +1324,25 @@ proc ::tclfpdf::Image { file { x1 "" } { y1 "" } { w1 "" } { h1  "" }  { type1 "
 		set h1 [expr -$info(h)*72/$h1/$k];
 	}	
 	if {$w1==0} {
-		set w1  [expr $h1*$info(w)/$info(h)];
+		set w1 [expr $h1*$info(w)/$info(h)];
 	}	
 	if {$h1==0} {
-		set h1  [expr $w1*$info(h)/$info(w)];
+		set h1 [expr $w1*$info(h)/$info(w)];
 	}	
 	;# Flowing mode
 	if {$y1==""} {
 		if { [expr $y+$h1]>$PageBreakTrigger && !$InHeader && !$InFooter && [AcceptPageBreak] } {
-		        ;# Automatic page break
-		        set x2  $x;
-		        AddPage $CurOrientation $CurPageSize $CurRotation;
-		        set x  $x2;
+			;# Automatic page break
+			set x2 $x;
+			AddPage $CurOrientation $CurPageSize $CurRotation;
+			set x $x2;
 		}
-		set y1  $y;
+		set y1 $y;
 		set y [expr $y+$h1];
 	}
 	if {$x1==""} {
 		set x1 $x;
-	}	
+	}
 	_out [format "q %.2f 0 0 %.2f %.2f %.2f cm /I%d Do Q" [expr $w1*$k] [expr $h1*$k] [expr $x1*$k] [expr ($h-($y1+$h1))*$k] $info(i) ];
 	if {$link1!=""} {
 		Link $x1 $y1 $w1 $h1 $link1;
@@ -1361,9 +1369,9 @@ proc ::tclfpdf::SetX { x1 } {
 	;# Set x position
 	variable x; variable w;
 	if {$x1 >=0} {
-		set x  $x1;
+		set x $x1;
 	} else {
-		set x  [expr $w+$x1];
+		set x [expr $w+$x1];
 	}	
 }
 
@@ -1399,27 +1407,27 @@ proc ::tclfpdf::Output { {name "doc.pdf" } { dest "f" } } {
 	variable TCLFPDF_USERPATH;
 	;# Output PDF to some destination
 	Close;
-	set dest  [string tolower $dest];
+	set dest [string tolower $dest];
 	switch $dest {
 		"f"	{
 			;# Save to local file
-			if { [file writable [file dirname [info script]] ]== 0  } {
+			if { [file writable [file dirname [info script]] ]== 0 } {
 				set name [file join $TCLFPDF_USERPATH $name]
 			} 
-		        if { [catch {open $name "wb"} f] } {
+			if { [catch {open $name "wb"} f] } {
 				Error "Can't save file $name"
 			};
-		        puts -nonewline $f $buffer;
-		        close $f ;
+			puts -nonewline $f $buffer;
+			close $f ;
 			}
 		"s"
 			{
-		        ;# Return as a string
-		        return $buffer;
+			;# Return as a string
+			return $buffer;
 			}
 		default
 			{
-		        Error "Incorrect output destination: $dest";
+			Error "Incorrect output destination: $dest";
 			}
 	}
 	;# Mimic Init (reset) : zero state
@@ -1433,10 +1441,10 @@ proc ::tclfpdf::_getpagesize {size} {
 	if {[string is wordchar $size]} {
 		set size [string tolower $size ];
 		if { [lsearch [array names StdPageSizes] $size] == -1} {
-		        Error "Unknown page size: $size";
+			Error "Unknown page size: $size";
 		}	
 		set s $StdPageSizes($size);
-		set a  [expr [lindex $s 0]/$k];
+		set a [expr [lindex $s 0]/$k];
 		set b [expr [lindex $s 1]/$k];
 		set lreturn [list $a $b];
 	} else {
@@ -1462,38 +1470,38 @@ proc ::tclfpdf::_beginpage { orientation size rotation} {
 	incr page;
 	set pages($page) {};
 	set PageLinks($page) {};
-	set state  2;
+	set state 2;
 	set x $lMargin;
 	set y $tMargin;
-	set FontFamily  "";
+	set FontFamily "";
 	;# Check page size and orientation
 	if {$orientation==""} {
 		set orientation $DefOrientation;
 	} else {
 		set orientation [string toupper [string index $orientation 0]];
-	}        
+	} 
 	if {$size==""} {
 		set size $DefPageSize;
 	} else {
 		set size [_getpagesize $size];
-	}        
+	}
 	if {$orientation!=$CurOrientation || [lindex $size 0]!=[lindex $CurPageSize 0] || [lindex $size 1]!=[lindex $CurPageSize 1]} {
 		;# New size or orientation
 		if {$orientation=="P"} {
-		        set w  [lindex $size 0];
-		        set h   [lindex $size 1];
+			set w [lindex $size 0];
+			set h [lindex $size 1];
 		} else {
-		        set w  [lindex $size 1];
-		        set h  [lindex $size 0];
+			set w [lindex $size 1];
+			set h [lindex $size 0];
 		}
 		set wPt [expr $w*$k];
 		set hPt [expr $h*$k];
 		set PageBreakTrigger [expr $h-$bMargin];
-		set CurOrientation  $orientation;
-		set CurPageSize  $size;
+		set CurOrientation $orientation;
+		set CurPageSize $size;
 	}
 	if {$orientation!=$DefOrientation || [lindex $size 0]!=[lindex $DefPageSize 0] || [lindex $size 1]!= [lindex $DefPageSize 1]} {
-		set PageInfo($page,size) [list $wPt  $hPt];
+		set PageInfo($page,size) [list $wPt $hPt];
 	}
 	if {$rotation!=0} {
 		if {$rotation%90!=0} {
@@ -1507,7 +1515,7 @@ proc ::tclfpdf::_beginpage { orientation size rotation} {
 proc ::tclfpdf::_endpage { } {
 	variable state;
 	
-	set state  1;
+	set state 1;
 }
 
 proc ::tclfpdf::_loadfont { font } {
@@ -1517,10 +1525,10 @@ proc ::tclfpdf::_loadfont { font } {
 	if {![isset name]} {
 		Error "Could not include font definition file: $font";
 	}
-	if  {[isset enc] } {
+	if {[isset enc] } {
 		set enc [string tolower $enc];
 	}
-	if  {![isset subsetted] } {
+	if {![isset subsetted] } {
 		set subsetted 0;
 	}
 	foreach v [info locals] {
@@ -1556,67 +1564,67 @@ proc ::tclfpdf::_textstring { s } {
 proc ::tclfpdf::_dounderline { x1 y1 txt } {
 	;# Underline text
 	variable CurrentFont; variable ws; variable k; variable h; variable FontSize; variable FontSizePt;
-	set up  [_getList2Arr $CurrentFont up];
-	set ut   [_getList2Arr $CurrentFont ut];
-	set w1  [expr [GetStringWidth $txt]+$ws*[expr {[llength [split $txt " "]] - 1}]];
-	return  [format "%.2f %.2f %.2f %.2f re f" [expr $x1*$k] [expr ($h-($y1-$up/1000.00*$FontSize))*$k] [expr $w1*$k] [expr -$ut/1000.00*$FontSizePt] ];
+	set up [_getList2Arr $CurrentFont up];
+	set ut [_getList2Arr $CurrentFont ut];
+	set w1 [expr [GetStringWidth $txt]+$ws*[expr {[llength [split $txt " "]] - 1}]];
+	return [format "%.2f %.2f %.2f %.2f re f" [expr $x1*$k] [expr ($h-($y1-$up/1000.00*$FontSize))*$k] [expr $w1*$k] [expr -$ut/1000.00*$FontSizePt] ];
 }
 
 proc ::tclfpdf::_parsejpg { file } {
 	;# Based on the method addJpeg of pdf4tcl 
-        set imgOK false
-        if {[catch {open $file "rb"} fr] } {
-            Error "Can't open file $file"
-        }
-        set img [read $fr]
-        close $fr
-        binary scan $img "H4" h
-        if {$h != "ffd8"} {
-            Error "File $file doesn't contain JPEG data."
-        }
-        set pos 2
-        set img_length [string length $img]
-        while {$pos < $img_length} {
-            set endpos [expr {$pos+4}]
-            binary scan [string range $img $pos $endpos] "H4S" h length
-            set length [expr {$length & 0xffff}]
-            if {$h == "ffc0" || $h == "ffc2"} {
-                incr pos 4
-                set endpos [expr {$pos+6}]
-                binary scan [string range $img $pos $endpos] "cSSc" bits height width channels
-                set height [expr {$height & 0xffff}]
-                set width [expr {$width & 0xffff}]
-                set imgOK true
-                break
-            } else {
-                incr pos 2
-                incr pos $length
-            }
-        }
-        if {!$imgOK} {
-            Error "Something is wrong with jpeg data in file $file"
-        } 	
-	if {$channels ==3} {
-		set colspace  "DeviceRGB"
-	}  elseif {$channels==4} {
-		set colspace "DeviceCMYK"
-	} else {
-		set colspace  "DeviceGray"
-	}	
-	if {$bits !=""} {
-		set bpc  $bits
-	} else { 
-		set bpc 8
+	set imgOK false;
+	if {[catch {open $file "rb"} fr] } {
+		Error "Can't open file $file";
 	}
-	array set jpeg [ list w $width h $height cs $colspace bpc $bpc f DCTDecode data $img]
-	return [array get jpeg]	
+	set img [read $fr];
+	close $fr;
+	binary scan $img "H4" h;
+	if {$h != "ffd8"} {
+		Error "File $file doesn't contain JPEG data.";
+	}
+	set pos 2;
+	set img_length [string length $img];
+	while {$pos < $img_length} {
+		set endpos [expr {$pos+4}];
+		binary scan [string range $img $pos $endpos] "H4S" h length;
+		set length [expr {$length & 0xffff}];
+		if {$h == "ffc0" || $h == "ffc2"} {
+			incr pos 4;
+			set endpos [expr {$pos+6}];
+			binary scan [string range $img $pos $endpos] "cSSc" bits height width channels;
+			set height [expr {$height & 0xffff}];
+			set width [expr {$width & 0xffff}];
+			set imgOK true;
+			break;
+		} else {
+			incr pos 2;
+			incr pos $length;
+		}
+	}
+	if {!$imgOK} {
+		Error "Something is wrong with jpeg data in file $file";
+	} 
+	if {$channels ==3} {
+		set colspace "DeviceRGB";
+	} elseif {$channels==4} {
+		set colspace "DeviceCMYK";
+	} else {
+		set colspace "DeviceGray";
+	}
+	if {$bits !=""} {
+		set bpc $bits;
+	} else { 
+		set bpc 8;
+	}
+	array set jpeg [ list w $width h $height cs $colspace bpc $bpc f DCTDecode data $img];
+	return [array get jpeg]
 }
 
 proc ::tclfpdf::_parsepng { file} {
 	;# Extract info from a PNG file
 	if {[catch {open $file "rb"} f]} {
 		Error "Can't open image file: $file";
-	}	
+	}
 	set info [ _parsepngstream $f $file];
 	close $f;
 	return $info;
@@ -1627,121 +1635,121 @@ proc ::tclfpdf::_parsepngstream { f file } {
 	;# Check signature
 	if { [_readstream $f 8]!="[format %c 137]PNG[format %c 13][format %c 10][format %c 26][format %c 10]"} {
 		Error "Not a PNG file: $file";
-	}	
+	}
 	;# Read header chunk
 	_readstream $f 4;
 	if { [_readstream $f 4] !="IHDR"} {
 		Error "Incorrect PNG file: $file";
-	}	
+	}
 	set w [ _readint $f];
-	set h  [ _readint $f];
+	set h [ _readint $f];
 	set bpc [scan [_readstream $f 1] %c];
 	if {$bpc>8} {
 		Error "16-bit depth not supported: $file";
-	}	
+	}
 	set ct [scan [_readstream $f 1] %c];
 	if {$ct==0 || $ct==4} {
-		set colspace  "DeviceGray";
+		set colspace "DeviceGray";
 	} elseif {$ct==2 || $ct==6} {
-		set colspace  "DeviceRGB";
+		set colspace "DeviceRGB";
 	} elseif {$ct==3} {
-		set colspace  "Indexed";
+		set colspace "Indexed";
 	} else {
 		Error "Unknown color type: $file";
-	}	
+	}
 	if {[scan [_readstream $f 1] %c] != 0} {
 		Error "Unknown compression method: $file";
-	}	
+	}
 	if {[scan [_readstream $f 1] %c] != 0} {
 		Error "Unknown filter method: $file";
-	}	
+	}
 	if {[scan [_readstream $f 1] %c] != 0} {
 		Error "Interlacing not supported: $file";
-	}	
+	}
 	_readstream $f 4;
 	if {$colspace=="DeviceRGB"} {
 		set colspace1 3;
 	} else {
 		set colspace1 1;
-	}	
-	set dp  "/Predictor 15 /Colors $colspace1 /BitsPerComponent $bpc /Columns $w";
+	}
+	set dp "/Predictor 15 /Colors $colspace1 /BitsPerComponent $bpc /Columns $w";
 	;# Scan chunks looking for palette, transparency and image data
-	set pal  "";
-	set trns  "";
-	set data  "";
+	set pal "";
+	set trns "";
+	set data "";
 	while {1} {
-		set n  [_readint $f];
-		set type  [_readstream $f 4];
+		set n [_readint $f];
+		set type [_readstream $f 4];
 		if {$type=="PLTE"} {
-		        ;# Read palette
-		        set pal [_readstream $f $n];
-		        _readstream $f 4;
+			;# Read palette
+			set pal [_readstream $f $n];
+			_readstream $f 4;
 		} elseif {$type=="tRNS"} {
-		        ;# Read transparency info
-		        set t  [ _readstream $f $n];
-		        if {$ct==0} {
-		                array set trns  0 [scan [_substr $t 1 1 ] %c]
+			;# Read transparency info
+			set t [ _readstream $f $n];
+			if {$ct==0} {
+				array set trns 0 [scan [_substr $t 1 1 ] %c]
 			} elseif {$ct==2} {
-		                array set trns array [list [scan [_substr $t 1 1] %c] [scan [_substr $t 3 1] %c]  [scan [_substr $t 5 1] %c] ];
+				array set trns array [list [scan [_substr $t 1 1] %c] [scan [_substr $t 3 1] %c] [scan [_substr $t 5 1] %c] ];
 			} else {
-		                set pos [ string first [format %c 0] $t];
-		                if {$pos!=0} {
-		                        set trns  array($pos);
-				}	
-		        }
-		        _readstream $f 4;
+				set pos [ string first [format %c 0] $t];
+				if {$pos!=0} {
+					set trns array($pos);
+				}
+			}
+			_readstream $f 4;
 		} elseif {$type=="IDAT"} {
-		        ;# Read image data block
-		        set data "$data[_readstream $f $n]";
-		        _readstream $f 4;
+			;# Read image data block
+			set data "$data[_readstream $f $n]";
+			_readstream $f 4;
 		} elseif {$type=="IEND"} {
-		        break;
+			break;
 		} else {
-		        _readstream $f [expr $n+4];
+			_readstream $f [expr $n+4];
 		}
 		if {!$n} break;
-	} 
+	}
 	if {$colspace=="Indexed" && $pal==""} {
-		Error "Missing palette in  $file";
+		Error "Missing palette in $file";
 	}
 	array set info [list w $w h $h cs $colspace bpc $bpc f FlateDecode dp $dp pal $pal trns $trns];
 	if {$ct>=4} {
 		;# Extract alpha channel
-		set data  [zlib decompress $data];
-		set color  "";
-		set alpha  "";
+		set data [zlib decompress $data];
+		set color "";
+		set alpha "";
 		if {$ct==4} {
-		        ;# Gray image
-		        set len [expr 2*$w];
-		        for {set i 0} {$i<$h} {incr i} {
-		                set pos  [expr (1+$len)*$i];
-		                set color "$color[string index $data $pos]";
-		                set alpha "$alpha[string index $data $pos]";
-		                set line  [_substr $data [expr $pos+1] $len];
-		                append color [regexp "/(.)./s" $1 $line];
-		                append alpha [regexp "/.(.)/s" $1 $line];
-		        }
-		} else  {
-		        ;# RGB image
-		        set len [expr 4*$w];
-		        for {set i 0} {$i<$h} { incr i} {
-		                set pos  [expr (1+$len)*$i];
-		                set color "$color[string index $data $pos]";
-		                set alpha "$alpha[string index $data $pos]";
-		                set line [_substr $data [expr $pos+1] $len];
+			;# Gray image
+			set len [expr 2*$w];
+			for {set i 0} {$i<$h} {incr i} {
+				set pos [expr (1+$len)*$i];
+				set color "$color[string index $data $pos]";
+				set alpha "$alpha[string index $data $pos]";
+				set line [_substr $data [expr $pos+1] $len];
+				append color [regexp "/(.)./s" $1 $line];
+			append alpha [regexp "/.(.)/s" $1 $line];
+			}
+		} else {
+			;# RGB image
+			set len [expr 4*$w];
+			for {set i 0} {$i<$h} { incr i} {
+				set pos [expr (1+$len)*$i];
+			set color "$color[string index $data $pos]";
+			set alpha "$alpha[string index $data $pos]";
+			set line [_substr $data [expr $pos+1] $len];
 				set color1 [regsub -all "(.{3})." $line {\1}];
-		                set color "$color$color1";
+			set color "$color$color1";
 				set alpha1 [regsub -all ".{3}(.)" $line {\1}];
-		                set alpha "$alpha$alpha1";				
-		        }
+				set alpha "$alpha$alpha1";				
+			}
 		}
 		unset data;
 		set data [zlib compress $color];
 		array set info "smask [list [zlib compress $alpha]]";
 		set WithAlpha 1;
 		if { $PDFVersion < "1.4" } {
-			set PDFVersion  "1.4";
-		}	
+			set PDFVersion "1.4";
+		}
 	}
 	array set info [list data $data];
 	return [array get info];
@@ -1749,11 +1757,11 @@ proc ::tclfpdf::_parsepngstream { f file } {
 
 proc ::tclfpdf::_readstream {f n} {
 	;# Read n bytes from stream
-	set res  "";
+	set res "";
 	while {$n>0 && ![eof $f]} {
 		set s [read $f $n];
 		if {$s==0} {
-		        Error "Error while reading stream";
+		Error "Error while reading stream";
 		}	
 		set n [expr $n-[string length $s]];
 		append res $s;
@@ -1789,7 +1797,7 @@ proc ::tclfpdf::_out { s } {
 	variable state;variable page; variable pages;
 	; variable n;
 	;# Add a line to the document
-	if { $state==2} {		
+	if { $state==2} {
 		array set pages "$page [list "$pages($page)$s\n"]";
 	} elseif { $state == 1} {
 		_put $s;
@@ -1802,7 +1810,7 @@ proc ::tclfpdf::_out { s } {
 
 proc ::tclfpdf::_put { s } {
 	variable buffer;
-	append  buffer "$s\n";	
+	append buffer "$s\n";	
 }
 
 proc ::tclfpdf::_getoffset { } {
@@ -1820,13 +1828,13 @@ proc ::tclfpdf::_newobj { { _n {} } } {
 	_put "$_n 0 obj";
 }
 
-proc ::tclfpdf::_putstream { data }  {
+proc ::tclfpdf::_putstream { data } {
 	_put "stream";
 	_put $data;
 	_put "endstream";
 }
 
-proc ::tclfpdf::_putstreamobject { data }  {
+proc ::tclfpdf::_putstreamobject { data } {
 	variable compress;
 	if {$compress==1} {
 		set entries "/Filter /FlateDecode ";
@@ -1842,14 +1850,14 @@ proc ::tclfpdf::_putstreamobject { data }  {
 }
 
 proc ::tclfpdf::_putlinks { n } {
-	variable PageLinks; variable links;  variable PageInfo; 
+	variable PageLinks; variable links; variable PageInfo; 
 	variable DefPageSize;variable k; variable DefOrientation;
 
 	set lpl [array get PageLinks $n,* ]
 	foreach {kpl vpl} $lpl {
 		lassign $vpl pl(0) pl(1) pl(2) pl(3) pl(4) pl(5)
 		_newobj;
-		set rect  [format "%.2f %.2f %.2f %.2f" $pl(0) $pl(1) [expr $pl(0)+$pl(2)] [expr $pl(1)-$pl(3)]];
+		set rect [format "%.2f %.2f %.2f %.2f" $pl(0) $pl(1) [expr $pl(0)+$pl(2)] [expr $pl(1)-$pl(3)]];
 		set s "<</Type /Annot /Subtype /Link /Rect \[$rect\] /Border \[0 0 0\] ";
 		if {![string is integer $pl(4)]} {
 			append s "/A <</S /URI /URI [_textstring $pl(4)]>>>>"; # URI need parenthesis but it come from _textstring
@@ -1859,10 +1867,10 @@ proc ::tclfpdf::_putlinks { n } {
 				lassign $Pageinfo($l(0)) PS(0) PS(1);
 				set h1 $PS(1);
 			} else {
-				set h1 [ expr  { $DefOrientation == "P" } ?[ lindex $DefPageSize 1]*$k : [lindex $DefPageSize 0]*$k];
+				set h1 [ expr { $DefOrientation == "P" } ?[ lindex $DefPageSize 1]*$k : [lindex $DefPageSize 0]*$k];
 			}	
-	                append s [format "/Dest \[%d 0 R /XYZ 0 %.2f null\]>>" $PageInfo($l(0),n) [expr $h1-$l(1)*$k]];
-	        }
+			append s [format "/Dest \[%d 0 R /XYZ 0 %.2f null\]>>" $PageInfo($l(0),n) [expr $h1-$l(1)*$k]];
+		}
 		_put $s;
 		_put "endobj";
 	}
@@ -1877,8 +1885,8 @@ proc ::tclfpdf::_putpage { n0 } {
 	_put "<</Type /Page";
 	_put "/Parent 1 0 R";
 	if {[isset PageInfo($n0,size)] } {
-		lassign $PageInfo($n0,size) PS(0)  PS(1);
-	        _put [format "/MediaBox \[0 0 %.2f %.2f\]" $PS(0) $PS(1)];
+		lassign $PageInfo($n0,size) PS(0) PS(1);
+		_put [format "/MediaBox \[0 0 %.2f %.2f\]" $PS(0) $PS(1)];
 	}
 	if {[isset PageInfo($n0,rotation)] } {
 		_put "/Rotate PageInfo($n,rotation)";
@@ -1887,11 +1895,11 @@ proc ::tclfpdf::_putpage { n0 } {
 	if {[isset PageLinks($n0,* ] } {
 		set s "/Annots \[";
 		set lpl [array get PageLinks $n0,* ]
-		foreach {ipl pl} $lpl  {
+		foreach {ipl pl} $lpl {
 			append s "[lindex $pl 5] 0 R ";
 		}
 		append s "\]";
-	        _put "$s";
+	_put "$s";
 	}
 	if {$WithAlpha} {
 		_put "/Group <</Type /Group /S /Transparency /CS /DeviceRGB>>";	
@@ -1899,12 +1907,12 @@ proc ::tclfpdf::_putpage { n0 } {
 	_put "/Contents [expr $n+1] 0 R>>";
 	_put "endobj";
 	# Page content
-	if {$AliasNbPages!=""} {
+	if {$AliasNbPages != ""} {
 		set alias [_UTF8toUTF16BE $AliasNbPages 0];
 		set r [_UTF8toUTF16BE $page 0];
-		set pages($n0)  [string map "$alias $r" $pages($n0)];
+		set pages($n0) [string map "$alias $r" $pages($n0)];
 		 # Now repeat for no pages in non-subset fonts
-		 set pages($n0)  [string map "$AliasNbPages $page" $pages($n0)];
+		 set pages($n0) [string map "$AliasNbPages $page" $pages($n0)];
 	}
 	_putstreamobject $pages($n0);
 	;#Link annotations
@@ -1915,13 +1923,13 @@ proc ::tclfpdf::_putpages { } {
 	 variable page; variable PageInfo; variable DefOrientation; 
 	 variable DefPageSize; variable k; variable n; variable PageLinks;
 
-	set nb  $page;
+	set nb $page;
 	set nn $n;
 	for {set n1 1} {$n1<=$nb } {incr n1} {
-		set PageInfo($n1,n)  [ incr nn ];
+		set PageInfo($n1,n) [ incr nn ];
 		incr nn ;
 		set lpl [array get PageLinks $n1,* ]
-		foreach {ipl pl} $lpl  {
+		foreach {ipl pl} $lpl {
 			lappend pl [incr nn]
 			set PageLinks($ipl) $pl
 		}
@@ -1932,18 +1940,18 @@ proc ::tclfpdf::_putpages { } {
 	# Pages root
 	_newobj 1;
 	_put "<</Type /Pages";
-	set kids  "/Kids \[";
+	set kids "/Kids \[";
 	for {set n3 1} {$n3<=$nb} {incr n3} {
 		append kids "$PageInfo($n3,n) 0 R ";
 	}
 	_put "$kids\]";
 	_put "/Count $nb";
 	if { $DefOrientation=="P"} {
-		set w1  [lindex $DefPageSize 0];
-		set h1  [lindex $DefPageSize 1];
+		set w1 [lindex $DefPageSize 0];
+		set h1 [lindex $DefPageSize 1];
 	} else {
-		set w1  [lindex $DefPageSize 1];
-		set h1   [lindex $DefPageSize 0];
+		set w1 [lindex $DefPageSize 1];
+		set h1 [lindex $DefPageSize 0];
 	}
 	_put [format "/MediaBox \[0 0 %.2f %.2f\]" [expr $w1*$k] [expr $h1 * $k]];
 	_put ">>";
@@ -1954,9 +1962,9 @@ proc ::tclfpdf::_putfonts { } {
 	variable n; variable diffs;variable FontFiles; variable fonts; 
 	variable TCLFPDF_COREFONTSPATH; variable CurrentFont;
 
-	foreach  {file info0} [array get FontFiles]  {
+	foreach {file info0} [array get FontFiles] {
 		array set _info $info0 ;
-		if {![isset _info(type)]  || $_info(type)!="TTF" } {
+		if {![isset _info(type)] || $_info(type)!="TTF" } {
 			# Font file embedding
 			_newobj;
 			set FontFiles($file,n) $n;
@@ -1966,16 +1974,16 @@ proc ::tclfpdf::_putfonts { } {
 			}
 			set font [read $fp];
 			close $fp;
-			set compressed  [string equal [file extension $file] ".z"];
+			set compressed [string equal [file extension $file] ".z"];
 			if {!$compressed && [isset _info(length2)] } {
-				set font [_substr $font  6 $_info(length1)][ _substr $font [expr 6 + $_info(length1)+6] $_info(length2)];
+				set font [_substr $font 6 $_info(length1)][ _substr $font [expr 6 + $_info(length1)+6] $_info(length2)];
 			}
 			_put "<</Length [string length $font]";
 			if {$compressed} {
 				_put "/Filter /FlateDecode";
 			}
 			_put "/Length1 $_info(length1)";
-			if {[isset  _info(length2)] }  {
+			if {[isset _info(length2)] } {
 				_put "/Length2 $_info(length2) /Length3 0";
 			}
 			_put ">>";
@@ -2011,36 +2019,36 @@ proc ::tclfpdf::_putfonts { } {
 		set type $font11(type);
 		set name $font11(name);
 		if {$type=="Core"} {
-		        ;#Core font
+			;#Core font
 			set fonts($k1) "$fonts($k1) n [expr $n+1]";
-		        _newobj;
-		        _put "<</Type /Font";
-		        _put "/BaseFont /$name";
-		        _put "/Subtype /Type1";
-		        if {$name!="Symbol" && $name!="ZapfDingbats"} {
-		                _put "/Encoding /WinAnsiEncoding";
+			_newobj;
+			_put "<</Type /Font";
+			_put "/BaseFont /$name";
+			_put "/Subtype /Type1";
+			if {$name!="Symbol" && $name!="ZapfDingbats"} {
+				_put "/Encoding /WinAnsiEncoding";
 			}
 			if { [isset font11(uv)] } {
 				_put "/ToUnicode $cmaps($cmapkey) 0 R";
 			}	
-		        _put ">>";
-		        _put "endobj";
+			_put ">>";
+			_put "endobj";
 		} elseif {$type=="Type1" || $type=="TrueType"} {
-		        ;# Additional Type1 or TrueType/OpenType font
+			;# Additional Type1 or TrueType/OpenType font
 			if { [isset font11(subsetted)] && $font11(subsetted)} {
-				set name  "AAAAAA+$name";
+				set name "AAAAAA+$name";
 			}
 			set fonts($k1) "$fonts($k1) n [expr $n+1]";
-		        _newobj ;
-		        _put "<</Type /Font";
-		        _put "/BaseFont /$name";
-		        _put "/Subtype /$type";
-		        _put "/FirstChar 32 /LastChar 255";
-		        _put "/Widths [expr ($n+1)] 0 R";
-		        _put "/FontDescriptor [expr ($n+2)] 0 R";
+			_newobj ;
+			_put "<</Type /Font";
+			_put "/BaseFont /$name";
+			_put "/Subtype /$type";
+			_put "/FirstChar 32 /LastChar 255";
+			_put "/Widths [expr ($n+1)] 0 R";
+			_put "/FontDescriptor [expr ($n+2)] 0 R";
 			if { $font11(enc) != ""} {
 				if {[isset font11(diff)] } {
-					_put "/Encoding  $encoding($font1(enc)) 0 R";
+					_put "/Encoding $encoding($font1(enc)) 0 R";
 				} else {
 					_put "/Encoding /WinAnsiEncoding";
 				}
@@ -2048,40 +2056,40 @@ proc ::tclfpdf::_putfonts { } {
 			if {[isset font11(uv)]} {
 				_put "/ToUnicode $cmaps($cmapkey) 0 R";
 			}
-		        _put ">>";
-		        _put "endobj";
-		        ;# Widths
-		        _newobj;
-		        array set cw $font11(cw);
-		        set s  "\[";
-		        for {set i 32} {$i<=255 } {incr i} {
+			_put ">>";
+			_put "endobj";
+			;# Widths
+			_newobj;
+			array set cw $font11(cw);
+			set s "\[";
+			for {set i 32} {$i<=255 } {incr i} {
 				set chr [format %c $i]
-		                append s "$cw($chr) ";				
+				append s "$cw($chr) ";
 			}
-		        _put "$s\]";
-		        _put "endobj";
-		        ;# Descriptor
-		        _newobj;
-		        set s  "<</Type /FontDescriptor /FontName /$name";
-		        foreach {k v}  $font11(desc) {
-		                append s  " /$k $v";
-			}	
-		        if {$font11(file)!=""} {
-		                if {$type=="Type1"} { 
-		                        set tipo ""
+			_put "$s\]";
+			_put "endobj";
+			;# Descriptor
+			_newobj;
+			set s "<</Type /FontDescriptor /FontName /$name";
+			foreach {k v} $font11(desc) {
+				append s " /$k $v";
+			}
+			if {$font11(file)!=""} {
+				if {$type=="Type1"} { 
+					set tipo ""
 				} else {
-		                        set tipo "2"
+					set tipo "2"
 				}
 				append s " /FontFile$tipo $FontFiles($font11(file),n) 0 R";
 			}	
-		        _put "$s>>";
-		        _put "endobj";
+			_put "$s>>";
+			_put "endobj";
 		} elseif {$type=="TTF"} {
 			;# TrueType embedded SUBSETS or FULL
 			set fonts($k1) "$fonts($k1) n [expr $n+1]";
 			source -encoding utf-8 "$TCLFPDF_COREFONTSPATH/ttf_font.tcl";
 			ttf_Init;
-			set fontname  "MPDFAA+$font11(name)";
+			set fontname "MPDFAA+$font11(name)";
 			set subset $font11(subset);
 			_lremove subset 0;
 			set ttfontstream [ttf_makeSubset $font11(ttffile) $subset];
@@ -2097,7 +2105,7 @@ proc ::tclfpdf::_putfonts { } {
 			_put "<</Type /Font";
 			_put "/Subtype /Type0";
 			_put "/BaseFont /$fontname";
-			_put  "/Encoding /Identity-H"; 
+			_put "/Encoding /Identity-H"; 
 			_put "/DescendantFonts \[[expr $n + 1] 0 R\]";
 			_put "/ToUnicode [expr $n + 2] 0 R";
 			_put ">>";
@@ -2128,23 +2136,23 @@ proc ::tclfpdf::_putfonts { } {
 			set toUni "/CIDInit /ProcSet findresource begin\n";
 			append toUni "12 dict begin\n";
 			append toUni "begincmap\n";
-			append toUni  "/CIDSystemInfo\n";
-			append toUni  "<</Registry (Adobe)\n";
-			append toUni  "/Ordering (UCS)\n";
-			append toUni  "/Supplement 0\n";
-			append toUni  ">> def\n";
-			append toUni  "/CMapName /Adobe-Identity-UCS def\n";
-			append toUni  "/CMapType 2 def\n";
-			append toUni  "1 begincodespacerange\n";
-			append toUni  "<0000> <FFFF>\n";
-			append toUni  "endcodespacerange\n";
-			append toUni  "1 beginbfrange\n";
-			append toUni  "<0000> <FFFF> <0000>\n";
-			append toUni  "endbfrange\n";
-			append toUni  "endcmap\n";
-			append toUni  "CMapName currentdict /CMap defineresource pop\n";
-			append toUni  "end\n";
-			append toUni  "end";
+			append toUni "/CIDSystemInfo\n";
+			append toUni "<</Registry (Adobe)\n";
+			append toUni "/Ordering (UCS)\n";
+			append toUni "/Supplement 0\n";
+			append toUni ">> def\n";
+			append toUni "/CMapName /Adobe-Identity-UCS def\n";
+			append toUni "/CMapType 2 def\n";
+			append toUni "1 begincodespacerange\n";
+			append toUni "<0000> <FFFF>\n";
+			append toUni "endcodespacerange\n";
+			append toUni "1 beginbfrange\n";
+			append toUni "<0000> <FFFF> <0000>\n";
+			append toUni "endbfrange\n";
+			append toUni "endcmap\n";
+			append toUni "CMapName currentdict /CMap defineresource pop\n";
+			append toUni "end\n";
+			append toUni "end";
 			_put "<</Length [string length $toUni]>>" ;
 			_putstream $toUni;
 			_put "endobj" ;
@@ -2161,8 +2169,8 @@ proc ::tclfpdf::_putfonts { } {
 			_newobj;
 			_put "<</Type /FontDescriptor" ;
 			_put "/FontName /$fontname";
-			foreach { kd v } $font11(desc)  {
-				if {$kd == "Flags"}  { 
+			foreach { kd v } $font11(desc) {
+				if {$kd == "Flags"} { 
 					set v [expr $v | 4]; 
 					set v [expr $v & ~32];
 				}	;#SYMBOLIC font flag
@@ -2175,7 +2183,7 @@ proc ::tclfpdf::_putfonts { } {
 			;#Embed CIDToGIDMap
 			;#A specification of the mapping from CIDs to glyph indices
 			set cidtogidmap [string repeat "\x00" [expr 256*256*2]];
-			foreach {cc glyph} [array get codeToGlyph]  {
+			foreach {cc glyph} [array get codeToGlyph] {
 				_setchar cidtogidmap [expr $cc*2] [format %c [expr $glyph >> 8]];
 				_setchar cidtogidmap [expr $cc*2 + 1] [format %c [expr $glyph & 0xFF]];
 			}
@@ -2196,15 +2204,15 @@ proc ::tclfpdf::_putfonts { } {
 			_putstream $fontstream;
 			_put "endobj" ;
 		} else {
-		        ;# Allow for additional types
-			set fonts($k1) "$fonts($k1) n  [expr $n+1]";
-		        set mtd  "_put[string tolower $type]";
-		        if {[info procs $mtd]==0} {
-		                Error "Unsupported font type: $type";
+			;# Allow for additional types
+			set fonts($k1) "$fonts($k1) n [expr $n+1]";
+			set mtd "_put[string tolower $type]";
+			if {[info procs $mtd]==0} {
+				Error "Unsupported font type: $type";
 			}	
-		        [eval $mtd $font1];
+			[eval $mtd $font1];
 		}
-	}	
+	}
 }
 
 proc ::tclfpdf::_putTTfontwidths { font0 maxUni} {
@@ -2228,7 +2236,7 @@ proc ::tclfpdf::_putTTfontwidths { font0 maxUni} {
 		if {$cid==128 && ![file exists $font(unifilename).cw127.tcl]} {
 			if {[catch {open "$font(unifilename).cw127.tcl" "wb" } fh ]} {
 				Error "Can't open file: $font(unifilename).cw127.tcl";
-			}			
+			}
 			set cw127 "#-------\n";
 			append cw127 "set rangeid $rangeid;\n";
 			append cw127 "set prevcid $prevcid;\n";
@@ -2266,8 +2274,8 @@ proc ::tclfpdf::_putTTfontwidths { font0 maxUni} {
 						_lremove range($rangeid) end;
 						#new range
 						set rangeid $prevcid;
-						lappend range($rangeid)  $prevwidth;
-						lappend range($rangeid)  $width;
+						lappend range($rangeid) $prevwidth;
+						lappend range($rangeid) $width;
 					}
 					set interval 1;#true
 					if {[lsearch $range($rangeid) "interval 1"]==-1} {
@@ -2301,7 +2309,7 @@ proc ::tclfpdf::_putTTfontwidths { font0 maxUni} {
 			if { [lsearch $range($k) "interval 1"] !=-1 } { 
 				_lremove range($k) "interval 1"
 			}
-			set range($prevk) [concat $range($prevk)  $range($k)];			
+			set range($prevk) [concat $range($prevk) $range($k)];			
 			unset range($k);
 		} else {
 			set prevk $k;
@@ -2337,12 +2345,12 @@ proc _tounicodecmap { uv } {
 	set nbr 0;
 	set chars {};
 	set nbc 0;
-	foreach {c v}  [lsort -stride 2 -integer $uv] {
+	foreach {c v} [lsort -stride 2 -integer $uv] {
 		if { [llength $v] > 1 } {
 			append ranges [format "<%02X> <%02X> <%04X>\n" $c [expr $c+[lindex $v 1]-1] [lindex $v 0] ];
 			incr nbr;
 		} else {
-			append chars  [format "<%02X> <%04X>\n" $c $v];
+			append chars [format "<%02X> <%04X>\n" $c $v];
 			incr nbc;
 		}
 	}
@@ -2400,7 +2408,7 @@ proc ::tclfpdf::_putimage { info1 } {
 	} else {
 		_put "/ColorSpace /$info(cs)";
 		if {$info(cs)=="DeviceCMYK"} {
-		        _put "/Decode \[1 0 1 0 1 0 1 0\]";
+			_put "/Decode \[1 0 1 0 1 0 1 0\]";
 		}	
 	}
 	_put "/BitsPerComponent $info(bpc)";
@@ -2425,8 +2433,8 @@ proc ::tclfpdf::_putimage { info1 } {
 	_put "endobj";
 	;# Soft mask
 	if {[isset info(smask) 0]} {
-		set dp  "/Predictor 15 /Colors 1 /BitsPerComponent 8 /Columns $info(w)";
-		_putimage [list w $info(w)  h $info(h) cs DeviceGray bpc 8 f $info(f) dp $dp data $info(smask)];
+		set dp "/Predictor 15 /Colors 1 /BitsPerComponent 8 /Columns $info(w)";
+		_putimage [list w $info(w) h $info(h) cs DeviceGray bpc 8 f $info(f) dp $dp data $info(smask)];
 	}
 	;# Palette
 	if {$info(cs)=="Indexed"} {
@@ -2472,7 +2480,7 @@ proc ::tclfpdf::_putinfo { } {
 	variable metadata; variable CreationDate;
 	
 	set metadata(CreationDate) $CreationDate;
-	foreach { k1 v1 } [array get metadata]  {
+	foreach { k1 v1 } [array get metadata] {
 		_put "/$k1 [_textstring $v1]";
 	}
 }
@@ -2490,14 +2498,14 @@ proc ::tclfpdf::_putcatalog { } {
 		_put "/OpenAction \[3 0 R /XYZ null null 1\]";
 	} elseif { [string is int $ZoomMode] } {
 		_put "/OpenAction \[3 0 R /XYZ null null [format \"%.2f\" [expr $ZoomMode/100)]]\]";
-	}	
+	}
 	if { $LayoutMode=="single"} {
 		_put "/PageLayout /SinglePage" ;
 	} elseif { $LayoutMode=="continuous"} {
 		_put "/PageLayout /OneColumn" ;
 	} elseif { $LayoutMode=="two"} {
 		_put "/PageLayout /TwoColumnLeft" ;
-	}	
+	}
 }
 
 proc ::tclfpdf::_putheader { } {
@@ -2533,13 +2541,13 @@ proc ::tclfpdf::_enddoc { } {
 	_put ">>";
 	_put "endobj" ;
 	;# Cross-ref
-	set offset  [_getoffset];
+	set offset [_getoffset];
 	_put "xref";
 	_put "0 [expr $n+1]";
 	_put "0000000000 65535 f ";
 	for {set i 1} {$i<=$n} {incr i} {
 		_put [format "%010d 00000 n " $offsets($i)];
-	}	
+	}
 	;# Trailer
 	_put "trailer";
 	_put "<<";
@@ -2548,34 +2556,34 @@ proc ::tclfpdf::_enddoc { } {
 	_put "startxref";
 	_put $offset;
 	_put "%%EOF";
-	set state  3;
+	set state 3;
 }
 
 proc ::tclfpdf::_UTF8toUTF16BE { s setbom } {
 	;# Convert UTF-8 to UTF-16BE with BOM if need
 	set s [encoding convertto [encoding system] $s] 
 	set res "";
-	if { $setbom == 1}  {
-		set res  "\xFE\xFF"; #Byte Order Mark (BOM)
+	if { $setbom == 1} {
+		set res "\xFE\xFF"; #Byte Order Mark (BOM)
 	}	
 	set nb [string length $s];
-	set i  -1;
+	set i -1;
 	while {$i<$nb-1} {
-		set c1 [scan  [string index $s [incr i]] %c];
+		set c1 [scan [string index $s [incr i]] %c];
 		if {$c1>=224} {
-		        ;# 3-byte character
-		        set c2 [scan [string index $s [incr i]] %c];
-		        set c3 [scan [string index $s [incr i]] %c];
-		        set res "$res[format %c [expr ((($c1 & 0x0F)<<4) + (($c2 & 0x3C)>>2))]]";
-		        set res "$res[format %c [expr ((($c2 & 0x03)<<6) + ($c3 & 0x3F))]]";
+			;# 3-byte character
+			set c2 [scan [string index $s [incr i]] %c];
+			set c3 [scan [string index $s [incr i]] %c];
+			set res "$res[format %c [expr ((($c1 & 0x0F)<<4) + (($c2 & 0x3C)>>2))]]";
+			set res "$res[format %c [expr ((($c2 & 0x03)<<6) + ($c3 & 0x3F))]]";
 		} elseif {$c1>=192} {
-		        ;# 2-byte character
-		        set c2 [scan [string index $s [incr i]] %c];
-		        set res "$res[format %c [expr (($c1 & 0x1C)>>2)]]";
-		        set res  "$res[format %c [expr ((($c1 & 0x03)<<6) + ($c2 & 0x3F))]]";
+			;# 2-byte character
+			set c2 [scan [string index $s [incr i]] %c];
+			set res "$res[format %c [expr (($c1 & 0x1C)>>2)]]";
+			set res "$res[format %c [expr ((($c1 & 0x03)<<6) + ($c2 & 0x3F))]]";
 		} else {
-		        ;# Single-byte character
-		        set res "$res\0[format %c $c1]";
+			;# Single-byte character
+			set res "$res\0[format %c $c1]";
 		}
 	}
 	return $res;
@@ -2620,7 +2628,7 @@ proc ::tclfpdf::SetSystemFontsPaths { listofpaths } {
 	}
 	;# even if TCLFPDF_SYSTEMFONTSPATHS was empty, still the font could be exist in other path ,
 	;#so the script keep running in the init, however if was setted after then throw error
-	if { $TCLFPDF_SYSTEMFONTSPATHS eq  {} && $_isInit == 0 } {
+	if { $TCLFPDF_SYSTEMFONTSPATHS eq {} && $_isInit == 0 } {
 			Error "Path not valid setting System Fonts: $p";
 	}
 }
@@ -2634,7 +2642,7 @@ proc ::tclfpdf::SetUserPath { path } {
 	;# Path exist
 	if {[file exist $path]==1} {
 		if {[file isdirectory $path ] ==1 } {
-			if { [file writable $path ]== 1  } {
+			if { [file writable $path ]== 1 } {
 				set TCLFPDF_USERPATH $path;
 			} else {
 				Error "Folder isn't writable, setting User Path: $path";
@@ -2659,8 +2667,8 @@ proc ::tclfpdf::_SearchPathFile { file } {
 	variable TCLFPDF_USERPATH;
 	
 	set declaredpaths $TCLFPDF_SYSTEMFONTSPATHS;
-	lappend  declaredpaths $TCLFPDF_COREFONTSPATH;
-	lappend  declaredpaths $TCLFPDF_USERPATH;
+	lappend declaredpaths $TCLFPDF_COREFONTSPATH;
+	lappend declaredpaths $TCLFPDF_USERPATH;
 
 	foreach p $declaredpaths {
 		if { [file exists "$p/$file"]} {

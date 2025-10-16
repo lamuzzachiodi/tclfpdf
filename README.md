@@ -1,4 +1,4 @@
-# **TCLFPDF 1.7.2 (2025)** #
+# **TCLFPDF 1.7.3 (2025)** #
 ## *Port of tFPDF (PHP) by  by Ian Back and Tycho Veltmeijer (modified version of FPDF by Olivier Plathey) to TCL* ##
 
 ----------
