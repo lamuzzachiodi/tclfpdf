@@ -1,4 +1,4 @@
-# **TCLFPDF 1.7.3 (2025)** #
+# **TCLFPDF 1.7.4 (2026)** #
 ## *Port of tFPDF (PHP) by  by Ian Back and Tycho Veltmeijer (modified version of FPDF by Olivier Plathey) to TCL* ##
 
 ----------
@@ -21,7 +21,7 @@ He tratado de ser lo más fiel posible al original en PHP, manteniendo los nombr
 
 Sus comentarios o sugerencias serán bienvenidos.
 
-__*Luis Alejandro Muzzachiodi (2025)*__
+__*Luis Alejandro Muzzachiodi (2026)*__
 
 
 ----------

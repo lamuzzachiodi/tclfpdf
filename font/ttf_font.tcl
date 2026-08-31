@@ -14,7 +14,7 @@
 ;# * modification of the file.                                                    *
 ;# *                                                                              *
 ;# *******************************************************************************
-;# Version 1.1  (2024 )
+;# Version 1.2  (2026 )
 ;# Ported to TCL by L. A. Muzzachiodi
 
 ;# Define the value used in the "head" table of a created TTF file
@@ -313,8 +313,8 @@ proc ::tclfpdf::ttf_extractInfo {} {
 			continue;
 		}
 		set N "";
-		if {$platformId == 3 && $encodingId == 1 && $languageId == 0x409} { ;# Microsoft, Unicode, US English, PS Name
-			set opos [::tclfpdf::ttf_pos];
+		if {$platformId == 3 && $encodingId == 1 && $languageId == 0x409} { ;# Microsoft, Unicode, US English, PS Name		
+			set opos $::tclfpdf::ttf_pos;
 			::tclfpdf::ttf_seek [expr $string_data_offset + $offset];
 			if {[expr $length % 2] != 0} {
 				Error "PostScript name is UTF-16BE string of odd length";
