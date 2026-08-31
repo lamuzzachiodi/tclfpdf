@@ -1,6 +1,6 @@
 ;# *******************************************************************************
 ;# tclfpdf.tcl 
-;# Version: 1.7.3 (2025)
+;# Version: 1.7.4 (2026)
 ;# Ported to TCL by L. A. Muzzachiodi
 ;# Credits:
 ;# Based on tFPDF 1.33 by Ian Back <ianb@bpm1.com>
@@ -11,7 +11,7 @@
 ;# Note: 
 ;# the definition of core fonts have a diference: the uv index in FPDF, not tfpdf, cause a bigger file (?)
 
-set _version 1.7.3
+set _version 1.7.4
 set _isInit 1
 package provide tclfpdf $_version
 package require Tk
